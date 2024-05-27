@@ -1,0 +1,79 @@
+CREATE TABLESPACE TS_TABLES_KP
+    DATAFILE 'C:\app\orcl_wald\tablespaces\TS_TABLES_KP.dbf'
+    SIZE 500M
+    AUTOEXTEND ON 
+    EXTENT MANAGEMENT LOCAL;
+
+create table Voucher (
+voucher_id number(12) not null,
+manager_id number(12) not null,
+user_id number(12) not null,
+tour_id number(12) not null,
+tour_date date,
+hotel_id number(12) not null,
+constraint PK_Voucher primary key(voucher_id) using index enable,
+constraint FK_MANAGERS foreign key (manager_id) references Managers (manager_id),
+constraint FK_USERS foreign key (user_id) references Users (user_id),
+constraint FK_TOUR foreign key (tour_id) references Tour (tour_id),
+constraint FK_HOTEL foreign key (hotel_id) references Hotel (hotel_id)
+) tablespace TS_TABLES_KP;
+
+create table Tour (
+tour_id number(12) not null,
+tour_name varchar(100) not null,
+explanation varchar(100),
+transport_id number(12) not null,
+period number(12),
+constraint PK_Tour primary key(tour_id) using index enable,
+constraint FK_TRANSPORT foreign key (transport_id) references Transport (transport_id)
+) tablespace TS_TABLES_KP; 
+
+create table Transport (
+transport_id number(12) not null,
+transport_name varchar(100) not null,
+constraint PK_Transport primary key(transport_id) using index enable
+) tablespace TS_TABLES_KP;
+
+create table Hotel (
+hotel_id number(12) not null,
+location_id number(12) not null,
+cost_for_day binary_float,
+hotel_name varchar(100) not null,
+constraint PK_Hotel primary key(hotel_id) using index enable,
+constraint FK_PLACE foreign key (location_id) references Place (location_id)
+) tablespace TS_TABLES_KP;
+
+create table Place (
+location_id number(12) not null,
+country_name varchar(100) not null,
+city_name varchar(100) not null,
+constraint PK_Place primary key(location_id) using index enable
+) tablespace TS_TABLES_KP;
+
+create table Managers (
+manager_id number(12) not null,
+manager_firstname varchar2(100) not null,
+manager_secondname varchar2(100) not null,
+manager_fathertname varchar2(100),
+salary binary_float,
+constraint PK_Managers primary key(manager_id) using index enable
+) tablespace TS_TABLES_KP;
+
+create table Users (
+user_id number(12) not null,
+user_firstname varchar2(100) not null,
+user_secondname varchar2(100) not null,
+user_fathertname varchar2(100),
+user_age int,
+constraint PK_Users primary key(user_id) using index enable
+) tablespace TS_TABLES_KP;
+
+drop table Voucher;
+drop table Tour;
+drop table Transport;
+drop table Hotel;
+drop table Place;
+drop table Managers;
+drop table Users;
+
+

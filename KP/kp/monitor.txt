@@ -1,0 +1,27 @@
+grant dba to ADMIN_KP;
+ALTER SYSTEM SET statistics_level=all;
+
+grant select on v_$sql to ADMIN_KP;
+grant select on v_$session to ADMIN_KP;
+grant select on v_$database to ADMIN_KP;
+grant SELECT_CATALOG_ROLE to ADMIN_KP;
+grant SELECT ANY DICTIONARY to ADMIN_KP;
+
+SELECT * FROM V$SYSSTAT; --Получение информации о производительности базы данных
+SELECT * FROM V$DATABASE; --Получение информации о доступности базы данных
+SELECT * FROM V$RESOURCE_LIMIT; --Получение информации о использовании ресурсов базы данных
+SELECT * FROM V$SESSION; --Получение информации о состоянии сессий пользователей
+SELECT * FROM V$PROCESS; --Получение информации о состоянии процессов базы данных
+SELECT * FROM V$SEGMENT_STATISTICS; --Получение информации о состоянии сегментов таблиц
+SELECT * FROM V$DATAFILE; --Получение информации о состоянии хранилища данных
+SELECT * FROM V$NETWORK_CONNECTION; --Получение информации о состоянии сетевых соединений:
+
+SELECT * FROM USER_OBJECTS;--Мониторинг объектов базы данных: для отслеживания объектов базы данных, таких как таблицы, индексы и представления, выполните следующий запрос
+SELECT * FROM DBA_AUDIT_TRAIL; --Мониторинг аудита: для отслеживания аудита базы данных выполните следующий запрос
+
+--аудит аутентификации и авторизации
+AUDIT SESSION;
+
+SELECT * FROM dba_audit_session;
+
+NOAUDIT SESSION;

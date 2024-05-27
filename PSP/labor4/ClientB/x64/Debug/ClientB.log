@@ -1,0 +1,5 @@
+﻿  ClientB.cpp
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\ЛР №4\ClientB\ClientB.cpp(13,1): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\ЛР №4\ClientB\ClientB.cpp(27,22): warning C4244: аргумент: преобразование "SOCKET" в "short", возможна потеря данных
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\ЛР №4\ClientB\ClientB.cpp(58): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+  ClientB.vcxproj -> C:\BSTU\2 kurs\2 kurs 2 sem\PSP\ЛР №4\ClientB\x64\Debug\ClientB.exe

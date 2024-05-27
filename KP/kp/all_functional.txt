@@ -1,0 +1,1149 @@
+GRANT UNLIMITED TABLESPACE TO ADMIN_KP;
+GRANT ALL PRIVILEGES TO RL_AMIN_KP;
+------------------------MANAGER-----------------------
+GRANT EXECUTE ON INSERT_VOUCHER TO RL_MANAGER_KP;
+GRANT EXECUTE ON INSERT_TOUR TO RL_MANAGER_KP;
+GRANT EXECUTE ON INSERT_TRANSPORT TO RL_MANAGER_KP;
+GRANT EXECUTE ON INSERT_HOTEL TO RL_MANAGER_KP;
+GRANT EXECUTE ON INSERT_PLACE TO RL_MANAGER_KP;
+GRANT EXECUTE ON INSERT_MANAGERS TO RL_MANAGER_KP;
+GRANT EXECUTE ON INSERT_USERS TO RL_MANAGER_KP;
+
+GRANT EXECUTE ON UPDATE_VOUCHER TO RL_MANAGER_KP;
+GRANT EXECUTE ON UPDATE_TOUR TO RL_MANAGER_KP;
+GRANT EXECUTE ON UPDATE_TRANSPORT TO RL_MANAGER_KP;
+GRANT EXECUTE ON UPDATE_HOTEL TO RL_MANAGER_KP;
+GRANT EXECUTE ON UPDATE_PLACE TO RL_MANAGER_KP;
+GRANT EXECUTE ON UPDATE_MANAGERS TO RL_MANAGER_KP;
+GRANT EXECUTE ON UPDATE_USERS TO RL_MANAGER_KP;
+
+GRANT EXECUTE ON DELETE_VOUCHER TO RL_MANGER_KP;
+GRANT EXECUTE ON DELETE_TOUR TO RL_MANAGER_KP;
+GRANT EXECUTE ON DELETE_TRANSPORT TO RL_MANGER_KP;
+GRANT EXECUTE ON DELETE_HOTEL TO RL_MANAGER_KP;
+GRANT EXECUTE ON DELETE_PLACE TO RL_MANAGER_KP;
+GRANT EXECUTE ON DELETE_MANAGERS TO RL_MANAGER_KP;
+GRANT EXECUTE ON DELETE_USERS TO RL_MANAGER_KP;
+
+GRANT EXECUTE ON ALL_VOUCHER TO RL_MANAGER_KP;
+GRANT EXECUTE ON ALL_TOUR TO RL_MANAGER_KP;
+GRANT EXECUTE ON ALL_TRANSPORT TO RL_MANAGER_KP;
+GRANT EXECUTE ON ALL_HOTEL TO RL_MANAGER_KP;
+GRANT EXECUTE ON ALL_PLACE TO RL_MANAGER_KP;
+GRANT EXECUTE ON ALL_MANAGERS TO RL_MANAGER_KP;
+GRANT EXECUTE ON ALL_USERS TO RL_MANAGER_KP;
+
+GRANT SELECT ON COST_HOTEL_INFO TO RL_MANAGER_KP;
+GRANT SELECT ON TOURS_FOR_ANY_WEEKS TO RL_MANAGER_KP;
+GRANT SELECT ON VOUCHER_INFO TO RL_MANAGER_KP;
+
+GRANT EXECUTE ON SEARCH_TOUR_BY_PLACE TO RL_MANAGER_KP;
+GRANT EXECUTE ON COUNT_FOR_PERIOD TO RL_MANAGER_KP;
+GRANT EXECUTE ON COUNT_VOUCHERS_MONTH TO RL_MANAGER_KP; 
+GRANT EXECUTE ON SEARCH_TOUR_BY_PERIOD TO RL_MANAGER_KP;
+
+-------------------------USER---------------------
+
+GRANT SELECT ON COST_HOTEL_INFO TO RL_USER_KP;
+GRANT SELECT ON TOURS_FOR_ANY_WEEKS TO RL_USER_KP;
+GRANT SELECT ON VOUCHER_INFO TO RL_USER_KP;
+
+GRANT EXECUTE ON INSERT_VOUCHER TO RL_USER_KP;
+
+GRANT EXECUTE ON SEARCH_TOUR_BY_PLACE TO RL_USER_KP;
+GRANT EXECUTE ON SEARCH_TOUR_BY_PERIOD TO RL_USER_KP;
+
+GRANT EXECUTE ON ALL_VOUCHER TO RL_USER_KP;
+GRANT EXECUTE ON ALL_TOUR TO RL_USER_KP;
+GRANT EXECUTE ON ALL_TRANSPORT TO RL_USER_KP;
+GRANT EXECUTE ON ALL_HOTEL TO RL_USER_KP;
+GRANT EXECUTE ON ALL_PLACE TO RL_USER_KP;
+GRANT EXECUTE ON ALL_MANAGERS TO RL_USER_KP;
+GRANT EXECUTE ON ALL_USERS TO RL_USER_KP;
+
+---------------------------INDEXES---------------
+------HOTEL-------
+CREATE INDEX FK_PLACE ON HOTEL (location_id);
+------TOUR--------
+CREATE INDEX FK_TRANSPORT ON TOUR (transport_id);
+------VOUCHER-----
+CREATE INDEX FK_MANAGERS ON VOUCHER (manager_id);
+CREATE INDEX FK_USERS ON VOUCHER (user_id);
+CREATE INDEX FK_TOUR ON VOUCHER (tour_id);
+CREATE INDEX FK_HOTEL ON VOUCHER (hotel_id);
+
+DROP INDEX FK_PLACE;
+DROP INDEX FK_TRANSPORT;
+DROP INDEX FK_MANAGERS;
+DROP INDEX FK_USERS;
+DROP INDEX FK_TOUR;
+DROP INDEX FK_HOTEL;
+
+------------------------SEQUENCES--------------------
+
+-----VOUCHER
+CREATE SEQUENCE ID_VOUCHER_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+-----TOUR
+CREATE SEQUENCE ID_TOUR_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+-----TRANSPORT
+CREATE SEQUENCE ID_TRANSPORT_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+-----HOTEL
+CREATE SEQUENCE ID_HOTEL_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+-----PLACE
+CREATE SEQUENCE ID_PLACE_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+-----MANAGERS
+CREATE SEQUENCE ID_MANAGERS_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+-----USERS
+CREATE SEQUENCE ID_USERS_SEQ
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 10000000000
+NOCYCLE;
+
+DROP SEQUENCE ID_VOUCHER_SEQ;
+DROP SEQUENCE ID_TOUR_SEQ;
+DROP SEQUENCE ID_TRANSPORT_SEQ;
+DROP SEQUENCE ID_HOTEL_SEQ;
+DROP SEQUENCE ID_PLACE_SEQ;
+DROP SEQUENCE ID_MANAGERS_SEQ;
+DROP SEQUENCE ID_USERS_SEQ;
+
+--------------------------------------INSERT-------------------------------
+
+
+----VOUCHER---
+CREATE OR REPLACE PROCEDURE INSERT_VOUCHER (
+manager_id Voucher.manager_id%TYPE,
+user_id Voucher.user_id%TYPE,
+tour_id Voucher.tour_id%TYPE,
+tour_date Voucher.tour_date%TYPE,
+hotel_id Voucher.hotel_id%TYPE
+)
+AS
+BEGIN
+INSERT INTO Voucher(voucher_id, manager_id, user_id, tour_id, tour_date, hotel_id)
+VALUES(ID_VOUCHER_SEQ.NEXTVAL, manager_id, user_id, tour_id, tour_date, hotel_id);
+END;
+
+----TOUR----
+CREATE OR REPLACE PROCEDURE INSERT_TOUR (
+tour_name Tour.tour_name%TYPE,
+explanation Tour.explanation%TYPE,
+transport_id Tour.transport_id%TYPE,
+period Tour.period%TYPE
+)
+AS
+BEGIN
+INSERT INTO Tour(tour_id, tour_name, explanation, transport_id, period)
+VALUES(ID_TOUR_SEQ.NEXTVAL, tour_name, explanation, transport_id, period);
+END;
+
+----TRANSPORT----
+CREATE OR REPLACE PROCEDURE INSERT_TRANSPORT (
+transport_name Transport.transport_name%TYPE
+)
+AS
+BEGIN
+INSERT INTO Transport(transport_id, transport_name)
+VALUES(ID_TRANSPORT_SEQ.NEXTVAL, transport_name);
+END;
+
+----HOTEL----
+CREATE OR REPLACE PROCEDURE INSERT_HOTEL (
+location_id Hotel.location_id%TYPE,
+cost_for_day Hotel.cost_for_day%TYPE,
+hotel_name Hotel.hotel_name%TYPE
+)
+AS
+BEGIN
+INSERT INTO Hotel(hotel_id, location_id, cost_for_day, hotel_name)
+VALUES(ID_HOTEL_SEQ.NEXTVAL, location_id, cost_for_day, hotel_name);
+END;
+
+----PLACE----
+CREATE OR REPLACE PROCEDURE INSERT_PLACE (
+country_name Place.country_name%TYPE,
+city_name Place.city_name%TYPE
+)
+AS
+BEGIN
+INSERT INTO Place(location_id, country_name, city_name)
+VALUES(ID_PLACE_SEQ.NEXTVAL, country_name, city_name);
+END;
+
+----MANAGERS----
+CREATE OR REPLACE PROCEDURE INSERT_MANAGERS (
+manager_firstname Managers.manager_firstname%TYPE,
+manager_secondname Managers.manager_secondname%TYPE,
+manager_fathertname Managers.manager_fathertname%TYPE,
+salary Managers.salary%TYPE
+)
+AS
+BEGIN
+INSERT INTO Managers(manager_id, manager_firstname, manager_secondname, manager_fathertname, salary)
+VALUES(ID_MANAGERS_SEQ.NEXTVAL, manager_firstname, manager_secondname, manager_fathertname, salary);
+END;
+
+----USERS----
+CREATE OR REPLACE PROCEDURE INSERT_USERS (
+user_firstname Users.user_firstname%TYPE,
+user_secondname Users.user_secondname%TYPE,
+user_fathertname Users.user_fathertname%TYPE,
+user_age Users.user_age%TYPE
+)
+AS
+BEGIN
+INSERT INTO Users(user_id, user_firstname, user_secondname, user_fathertname, user_age)
+VALUES(ID_USERS_SEQ.NEXTVAL, user_firstname, user_secondname, user_fathertname, user_age);
+END;
+
+
+DROP PROCEDURE INSERT_VOUCHER;
+DROP PROCEDURE INSERT_TOUR;
+DROP PROCEDURE INDERT_TRANSPORT;
+DROP PROCEDURE INSERT_HOTEL;
+DROP PROCEDURE INSERT_PLACE;
+DROP PROCEDURE INSERT_MANAGERS;
+DROP PROCEDURE INSERT_USERS;
+
+EXEC INSERT_USERS('Алексей', 'Дрозд', 'Игоревич', 19);
+EXEC INSERT_USERS('Максим', 'Химяк', 'Денисович', 19);
+EXEC INSERT_USERS('Владимир', 'Лобанов', 'Дмитриевич', 19);
+EXEC INSERT_USERS('Виталий', 'Санец', 'Алексеевич', 23);
+EXEC INSERT_USERS('Дмитрий', 'Никифорович', 'Артемович', 20);
+EXEC INSERT_USERS('Артем', 'Новик', 'Альбертович', 22);
+SELECT * FROM USERS;
+
+EXEC INSERT_MANAGERS('Филипп', 'Шматко', 'Федорович', 200);
+EXEC INSERT_MANAGERS('Екатерина', 'Дрозд', 'Игоревна', 300);
+EXEC INSERT_MANAGERS('Егор', 'Дробушевич', 'Вячеславович', 500);
+EXEC INSERT_MANAGERS('Владислав', 'Волочков', 'Юрьевич', 100);
+EXEC INSERT_MANAGERS('Александр', 'Соколенко', 'Иванович', 700);
+SELECT * FROM MANAGERS;
+
+EXEC INSERT_PLACE('Италия', 'Рим');
+EXEC INSERT_PLACE('Италия', 'Флоренция');
+EXEC INSERT_PLACE('Италия', 'Милан');
+EXEC INSERT_PLACE('Италия', 'Неаполь');
+EXEC INSERT_PLACE('Испания', 'Мадрид');
+EXEC INSERT_PLACE('Испания', 'Барселона');
+EXEC INSERT_PLACE('Испания', 'Севилья');
+EXEC INSERT_PLACE('Испания', 'Мальорка');
+EXEC INSERT_PLACE('Испания', 'Тенерифе');
+EXEC INSERT_PLACE('Греция', 'Афины');
+EXEC INSERT_PLACE('Греция', 'Крит');
+EXEC INSERT_PLACE('Греция', 'Родос');
+EXEC INSERT_PLACE('Франция', 'Париж');
+EXEC INSERT_PLACE('Франция', 'Марсель');
+EXEC INSERT_PLACE('Франция', 'Ренн');
+SELECT * FROM PLACE;
+
+EXEC INSERT_HOTEL(1, 30, 'Victory');
+EXEC INSERT_HOTEL(3, 50, 'Sun');
+EXEC INSERT_HOTEL(7, 20, 'Sean');
+EXEC INSERT_HOTEL(4, 30, 'Vic');
+EXEC INSERT_HOTEL(6, 70, 'Neo');
+EXEC INSERT_HOTEL(12, 30, 'Greece');
+SELECT * FROM HOTEL;
+
+EXEC INSERT_TRANSPORT('Stallion_bus');
+EXEC INSERT_TRANSPORT('Mustang_plain');
+EXEC INSERT_TRANSPORT('Bear_plain');
+EXEC INSERT_TRANSPORT('Dolphin_ship');
+EXEC INSERT_TRANSPORT('Horse_bus');
+EXEC INSERT_TRANSPORT('Luxor_train');
+EXEC INSERT_TRANSPORT('Honey_bus');
+EXEC INSERT_TRANSPORT('Scally_ship');
+SELECT * FROM TRANSPORT;
+
+EXEC INSERT_TOUR('Барселона', 'Описание1', 3, 12);
+EXEC INSERT_TOUR('Барселона', 'Описание2', 1, 5);
+EXEC INSERT_TOUR('Барселона', 'Описание3', 4, 3);
+EXEC INSERT_TOUR('Барселона', 'Описание4', 6, 18);
+EXEC INSERT_TOUR('Барселона', 'Описание5', 7, 19);
+EXEC INSERT_TOUR('Флоренция', 'Описание6', 2, 11);
+EXEC INSERT_TOUR('АФины', 'Описание7', 5, 9);
+EXEC INSERT_TOUR('Крит', 'Описание8', 5, 7);
+EXEC INSERT_TOUR('Париж', 'Описание9', 8, 22);
+EXEC INSERT_TOUR('Севилья', 'Описание10', 1, 13);
+EXEC INSERT_TOUR('Тенерифе', 'Описание15', 5, 17);
+SELECT * FROM TOUR;
+
+EXEC INSERT_VOUCHER(1, 2, 5, '22-08-2023', 5);
+EXEC INSERT_VOUCHER(3, 5, 2, '20-06-2023', 3);
+EXEC INSERT_VOUCHER(5, 3, 3, '11-11-2023', 4);
+EXEC INSERT_VOUCHER(4, 1, 4, '16-09-2023', 2);
+SELECT * FROM VOUCHER;
+-------------------------------------UPDATE-----------------------------
+
+----VOUCHER---
+CREATE OR REPLACE PROCEDURE UPDATE_VOUCHER (
+u_voucher_id Voucher.voucher_id%TYPE,
+u_manager_id Voucher.manager_id%TYPE,
+u_user_id Voucher.user_id%TYPE,
+u_tour_id Voucher.tour_id%TYPE,
+u_tour_date Voucher.tour_date%TYPE,
+u_hotel_id Voucher.hotel_id%TYPE
+)
+AS
+BEGIN
+UPDATE Voucher
+SET
+Voucher.manager_id = u_manager_id,
+Voucher.user_id = u_user_id,
+Voucher.tour_id = u_tour_id,
+Voucher.tour_date = u_tour_date,
+Voucher.hotel_id = u_hotel_id
+WHERE
+Voucher.voucher_id = u_voucher_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----TOUR----
+CREATE OR REPLACE PROCEDURE UPDATE_TOUR (
+u_tour_id Tour.tour_id%TYPE,
+u_tour_name Tour.tour_name%TYPE,
+u_explanation Tour.explanation%TYPE,
+u_transport_id Tour.transport_id%TYPE,
+u_period Tour.period%TYPE
+)
+AS
+BEGIN
+UPDATE Tour
+SET
+Tour.tour_name = u_tour_name,
+Tour.explanation = u_explanation,
+Tour.transport_id = u_transport_id,
+Tour.period = u_period
+WHERE
+Tour.tour_id = u_tour_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----TRANSPORT----
+CREATE OR REPLACE PROCEDURE UPDATE_TRANSPORT (
+u_transport_id Transport.transport_id%TYPE,
+u_transport_name Transport.transport_name%TYPE
+)
+AS
+BEGIN
+UPDATE Transport
+SET
+Transport.transport_name = u_transport_name 
+WHERE
+Transport.transport_id = u_transport_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----HOTEL----
+CREATE OR REPLACE PROCEDURE UPDATE_HOTEL (
+u_hotel_id Hotel.hotel_id%TYPE,
+u_location_id Hotel.location_id%TYPE,
+u_cost_for_day Hotel.cost_for_day%TYPE,
+u_hotel_name Hotel.hotel_name%TYPE
+)
+AS
+BEGIN
+UPDATE Hotel
+SET
+Hotel.location_id = u_location_id,
+Hotel.cost_for_day = u_cost_for_day,
+Hotel.hotel_name = u_hotel_name
+WHERE
+Hotel.hotel_id = u_hotel_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----PLACE----
+CREATE OR REPLACE PROCEDURE UPDATE_PLACE (
+u_location_id Place.location_id%TYPE,
+u_country_name Place.country_name%TYPE,
+u_city_name Place.city_name%TYPE
+)
+AS
+BEGIN
+UPDATE Place
+SET
+Place.country_name = u_country_name,
+Place.city_name = u_city_name
+WHERE
+Place.location_id = u_location_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----MANAGERS----
+CREATE OR REPLACE PROCEDURE UPDATE_MANAGERS (
+u_manager_id Managers.manager_id%TYPE,
+u_manager_firstname Managers.manager_firstname%TYPE,
+u_manager_secondname Managers.manager_secondname%TYPE,
+u_manager_fathertname Managers.manager_fathertname%TYPE,
+u_salary Managers.salary%TYPE
+)
+AS
+BEGIN
+UPDATE Managers
+SET
+Managers.manager_firstname = u_manager_firstname,
+Managers.manager_secondname = u_manager_secondname,
+Managers.manager_fathertname = u_manager_fathertname,
+Managers.salary = u_salary
+WHERE
+Managers.manager_id = u_manager_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----USERS----
+CREATE OR REPLACE PROCEDURE UPDATE_USERS (
+u_user_id Users.user_id%TYPE,
+u_user_firstname Users.user_firstname%TYPE,
+u_user_secondname Users.user_secondname%TYPE,
+u_user_fathertname Users.user_fathertname%TYPE,
+u_user_age Users.user_age%TYPE
+)
+AS
+BEGIN
+UPDATE Users
+SET
+Users.user_firstname = u_user_firstname,
+Users.user_secondname = u_user_secondname,
+Users.user_fathertname = u_user_fathertname,
+Users.user_age = u_user_age
+WHERE
+Users.user_id = u_user_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+DROP PROCEDURE UPDATE_VOUCHER;
+DROP PROCEDURE UPDATE_TOUR;
+DROP PROCEDURE UPDATE_TRANSPORT;
+DROP PROCEDURE UPDATE_HOTEL;
+DROP PROCEDURE UPDATE_PLACE;
+DROP PROCEDURE UPDATE_MANAGERS;
+DROP PROCEDURE UPDATE_USERS;
+
+EXEC UPDATE_USERS(1, 'Виктор', 'Сухоруков', 'Денисович', 30);
+EXEC ALL_USERS;
+
+EXEC UPDATE_MANAGERS(4, 'Алесь', 'Береза', 'Борисович', 200);
+EXEC ALL_MANAGERS;
+
+EXEC UPDATE_PLACE(1, 'Чехия', 'Прага');
+EXEC ALL_PLACE;
+
+EXEC UPDATE_HOTEL(1, 1, 60, 'Sunshine');
+EXEC ALL_HOTEL;
+
+EXEC UPDATE_TRANSPORT(1, 'Dragon');
+EXEC ALL_TRANSPORT;
+
+EXEC UPDATE_TOUR(3, 'Испания', 'Описание13', 3, 18);
+EXEC ALL_TOUR;
+
+EXEC UPDATE_VOUCHER(1, 3, 4, 3, '22-10-2024', 5);
+EXEC ALL_VOUCHER;
+---------------------------ALL------------------------
+
+----VOUCHER---
+CREATE OR REPLACE PROCEDURE ALL_VOUCHER 
+AS
+BEGIN
+DECLARE
+a_voucher_id Voucher.voucher_id%TYPE;
+a_manager_id Voucher.manager_id%TYPE;
+a_user_id Voucher.user_id%TYPE;
+a_tour_id Voucher.tour_id%TYPE;
+a_tour_date Voucher.tour_date%TYPE;
+a_hotel_id Voucher.hotel_id%TYPE;
+CURSOR c_vouch IS SELECT * FROM Voucher;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_vouch IN c_vouch
+LOOP
+a_voucher_id := l_vouch.voucher_id;
+a_manager_id := l_vouch.manager_id;
+a_user_id := l_vouch.user_id;
+a_tour_id := l_vouch.tour_id;
+a_tour_date := l_vouch.tour_date;
+a_hotel_id := l_vouch.hotel_id;
+DBMS_OUTPUT.PUT_LINE (a_voucher_id ||' | '|| a_manager_id ||' | '|| a_user_id ||' | '|| a_tour_id ||' | '|| a_tour_date ||' | '|| a_hotel_id);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----TOUR----
+CREATE OR REPLACE PROCEDURE ALL_TOUR 
+AS
+BEGIN
+DECLARE
+a_tour_id Tour.tour_id%TYPE;
+a_tour_name Tour.tour_name%TYPE;
+a_explanation Tour.explanation%TYPE;
+a_transport_id Tour.transport_id%TYPE;
+a_period Tour.period%TYPE;
+CURSOR c_tr IS SELECT * FROM Tour;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_tr IN c_tr
+LOOP
+a_tour_id := l_tr.tour_id;
+a_tour_name := l_tr.tour_name;
+a_explanation := l_tr.explanation;
+a_transport_id := l_tr.transport_id;
+a_period := l_tr.period;
+DBMS_OUTPUT.PUT_LINE (a_tour_id ||' | '|| a_tour_name ||' | '|| a_explanation  ||' | '|| a_transport_id ||' | '|| a_period);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----TRANSPORT----
+CREATE OR REPLACE PROCEDURE ALL_TRANSPORT 
+AS
+BEGIN
+DECLARE
+a_transport_id Transport.transport_id%TYPE;
+a_transport_name Transport.transport_name%TYPE;
+CURSOR c_trns IS SELECT * FROM Transport;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_trns IN c_trns
+LOOP
+a_transport_id := l_trns.transport_id;
+a_transport_name := l_trns.transport_name;
+DBMS_OUTPUT.PUT_LINE (a_transport_id ||' | '|| a_transport_name);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----HOTEL----
+CREATE OR REPLACE PROCEDURE ALL_HOTEL 
+AS
+BEGIN
+DECLARE
+a_hotel_id Hotel.hotel_id%TYPE;
+a_location_id Hotel.location_id%TYPE;
+a_cost_for_day Hotel.cost_for_day%TYPE;
+a_hotel_name Hotel.hotel_name%TYPE;
+CURSOR c_htl IS SELECT * FROM Hotel;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_htl IN c_htl
+LOOP
+a_hotel_id := l_htl.hotel_id;
+a_location_id := l_htl.location_id;
+a_cost_for_day := l_htl.cost_for_day;
+a_hotel_name := l_htl.hotel_name;
+DBMS_OUTPUT.PUT_LINE (a_hotel_id  ||' | '|| a_location_id ||' | '|| a_cost_for_day ||' | '|| a_hotel_name);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----PLACE----
+CREATE OR REPLACE PROCEDURE ALL_PLACE 
+AS
+BEGIN
+DECLARE
+a_location_id Place.location_id%TYPE;
+a_country_name Place.country_name%TYPE;
+a_city_name Place.city_name%TYPE;
+CURSOR c_plc IS SELECT * FROM Place;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_plc IN c_plc
+LOOP
+a_location_id := l_plc.location_id;
+a_country_name := l_plc.country_name;
+a_city_name := l_plc.city_name;
+DBMS_OUTPUT.PUT_LINE (a_location_id  ||' | '|| a_country_name ||' | '|| a_city_name);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----MANAGERS----
+CREATE OR REPLACE PROCEDURE ALL_MANAGERS 
+AS
+BEGIN
+DECLARE
+a_manager_id Managers.manager_id%TYPE;
+a_manager_firstname Managers.manager_firstname%TYPE;
+a_manager_secondname Managers.manager_secondname%TYPE;
+a_manager_fathertname Managers.manager_fathertname%TYPE;
+a_salary Managers.salary%TYPE;
+CURSOR c_mng IS SELECT * FROM Managers;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_mng IN c_mng
+LOOP
+a_manager_id := l_mng.manager_id;
+a_manager_firstname := l_mng.manager_firstname;
+a_manager_secondname := l_mng.manager_secondname;
+a_manager_fathertname := l_mng.manager_fathertname;
+a_salary := l_mng.salary;
+DBMS_OUTPUT.PUT_LINE (a_manager_id  ||' | '|| a_manager_firstname ||' | '|| a_manager_secondname ||' | '|| a_manager_fathertname ||' | '|| a_salary);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+----USERS----
+CREATE OR REPLACE PROCEDURE ALL_USERS 
+AS
+BEGIN
+DECLARE
+a_user_id Users.user_id%TYPE;
+a_user_firstname Users.user_firstname%TYPE;
+a_user_secondname Users.user_secondname%TYPE;
+a_user_fathertname Users.user_fathertname%TYPE;
+a_user_age Users.user_age%TYPE;
+CURSOR c_us IS SELECT * FROM Users;
+BEGIN
+DBMS_OUTPUT.ENABLE (buffer_size => null);
+FOR l_us IN c_us
+LOOP
+a_user_id := l_us.user_id;
+a_user_firstname := l_us.user_firstname;
+a_user_secondname := l_us.user_secondname;
+a_user_fathertname := l_us.user_fathertname;
+a_user_age := l_us.user_age;
+DBMS_OUTPUT.PUT_LINE (a_user_id ||' | '|| a_user_firstname ||' | '|| a_user_secondname ||' | '|| a_user_fathertname ||' | '|| a_user_age);
+END LOOP;
+END;
+EXCEPTION 
+WHEN OTHERS
+THEN 
+DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+DROP PROCEDURE ALL_VOUCHER;
+DROP PROCEDURE ALL_TOUR;
+DROP PROCEDURE ALL_TRANSPORT;
+DROP PROCEDURE ALL_HOTEL;
+DROP PROCEDURE ALL_PLACE;
+DROP PROCEDURE ALL_MANAGERS;
+DROP PROCEDURE ALL_USERS;
+
+EXEC ALL_VOUCHER;
+EXEC ALL_TOUR;
+EXEC ALL_TRANSPORT;
+EXEC ALL_HOTEL;
+EXEC ALL_PLACE;
+EXEC ALL_MANAGERS;
+EXEC ALL_USERS;
+
+-------------------------------DELETE------------------
+
+-------------VOUCHER----------
+CREATE OR REPLACE PROCEDURE DELETE_VOUCHER (
+d_voucher_id Voucher.voucher_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Voucher
+WHERE Voucher.voucher_id = d_voucher_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+-------------TOUR----------
+CREATE OR REPLACE PROCEDURE DELETE_TOUR (
+d_tour_id Tour.tour_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Tour
+WHERE Tour.tour_id = d_tour_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+-------------TRANSPORT----------
+CREATE OR REPLACE PROCEDURE DELETE_TRANSPORT (
+d_transport_id Transport.transport_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Transport
+WHERE Transport.transport_id = d_transport_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+-------------HOTEL----------
+CREATE OR REPLACE PROCEDURE DELETE_HOTEL (
+d_hotel_id Hotel.hotel_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Hotel
+WHERE Hotel.hotel_id = d_hotel_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+-------------PLACE----------
+CREATE OR REPLACE PROCEDURE DELETE_PLACE (
+d_location_id Place.location_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Place
+WHERE Place.location_id = d_location_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+-------------MANAGERS---------
+CREATE OR REPLACE PROCEDURE DELETE_MANAGERS (
+d_manager_id Managers.manager_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Managers
+WHERE Managers.manager_id = d_manager_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+-------------USERS---------
+CREATE OR REPLACE PROCEDURE DELETE_USERS (
+d_user_id Users.user_id%TYPE
+) 
+AS
+BEGIN
+DELETE FROM Users
+WHERE Users.user_id = d_user_id;
+EXCEPTION
+WHEN OTHERS
+THEN
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+DROP PROCEDURE DELETE_VOUCHER;
+DROP PROCEDURE DELETE_TOUR;
+DROP PROCEDURE DELETE_TRANSPORT;
+DROP PROCEDURE DELETE_HOTEL;
+DROP PROCEDURE DELETE_PLACE;
+DROP PROCEDURE DELETE_MANAGERS;
+DROP PROCEDURE DELETE_USERS;
+
+----------------------------------SEARCH----------------------
+DROP PROCEDURE SEARCH_TOUR_BY_PLACE;
+CREATE OR REPLACE PROCEDURE SEARCH_TOUR_BY_PLACE(
+str VARCHAR2
+)
+AS
+BEGIN
+DECLARE 
+s_tour_id TOUR.TOUR_ID%TYPE;
+s_tour_name TOUR.TOUR_NAME%TYPE;
+s_explanation TOUR.EXPLANATION%TYPE;
+s_transport_id TOUR.TRANSPORT_ID%TYPE;
+s_period TOUR.PERIOD%TYPE;
+CURSOR C_TOUR IS SELECT * FROM TOUR; 
+BEGIN
+FOR L_TOUR IN C_TOUR
+LOOP
+IF L_TOUR.TOUR_NAME = str THEN
+s_tour_id := L_TOUR.TOUR_ID;
+s_tour_name := L_TOUR.TOUR_NAME;
+s_explanation := L_TOUR.EXPLANATION;
+s_transport_id := L_TOUR.TRANSPORT_ID;
+s_period := L_TOUR.PERIOD;
+SYS.DBMS_OUTPUT.PUT_LINE (s_tour_id||' | '|| s_tour_name ||' | '|| s_explanation ||' | '|| s_transport_id ||' | '|| s_period);
+END IF;
+END LOOP;
+END;
+EXCEPTION
+when others
+then
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+EXEC SEARCH_TOUR_BY_PLACE('Барселона');
+
+CREATE OR REPLACE PROCEDURE SEARCH_TOUR_BY_PERIOD(
+fir number,
+sec number
+)
+AS
+BEGIN
+DECLARE 
+s_tour_id TOUR.TOUR_ID%TYPE;
+s_tour_name TOUR.TOUR_NAME%TYPE;
+s_explanation TOUR.EXPLANATION%TYPE;
+s_transport_id TOUR.TRANSPORT_ID%TYPE;
+s_period TOUR.PERIOD%TYPE;
+CURSOR C_TOUR IS SELECT * FROM TOUR; 
+BEGIN
+FOR L_TOUR IN C_TOUR
+LOOP
+IF L_TOUR.period > fir THEN
+IF sec > L_TOUR.period THEN 
+s_tour_id := L_TOUR.TOUR_ID;
+s_tour_name := L_TOUR.TOUR_NAME;
+s_explanation := L_TOUR.EXPLANATION;
+s_transport_id := L_TOUR.TRANSPORT_ID;
+s_period := L_TOUR.PERIOD;
+SYS.DBMS_OUTPUT.PUT_LINE (s_tour_id||' | '|| s_tour_name ||' | '|| s_explanation ||' | '|| s_transport_id ||' | '|| s_period);
+END IF;
+END IF;
+END LOOP;
+END;
+EXCEPTION
+when others
+then
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+EXEC SEARCH_TOUR_BY_PERIOD(5, 17);
+
+
+CREATE OR REPLACE PROCEDURE COUNT_FOR_PERIOD(
+str1 date,
+str2 date
+) 
+AS BEGIN 
+DECLARE
+count_of_vouchers NUMBER;
+BEGIN
+SELECT COUNT(*) INTO count_of_vouchers FROM VOUCHER
+WHERE tour_date BETWEEN str1 and str2;
+SYS.DBMS_OUTPUT.PUT_LINE('Количество путевок: ' || count_of_vouchers);
+END;
+EXCEPTION
+when others
+then
+SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+EXEC COUNT_FOR_PERIOD('21.10.2023', '23.10.2024'); 
+
+CREATE OR REPLACE PROCEDURE COUNT_VOUCHERS_MONTH (
+  p_start_date IN DATE,
+  p_end_date IN DATE
+)
+IS
+BEGIN
+  FOR i IN 1..12 LOOP
+    -- вычисляем начало и конец текущего месяца
+    DECLARE
+      v_month_start DATE;
+      v_month_end DATE;
+    BEGIN
+      v_month_start := TRUNC(ADD_MONTHS(p_start_date, i-1), 'MM');
+      v_month_end := LAST_DAY(v_month_start);
+      IF v_month_end > p_end_date THEN
+        v_month_end := p_end_date;
+      END IF;
+      
+      -- вычисляем количество проданных путевок за текущий месяц
+      DECLARE
+        v_sales_count NUMBER(10);
+      BEGIN
+        SELECT COUNT(*)
+        INTO v_sales_count
+        FROM VOUCHER
+        WHERE tour_date >= v_month_start AND tour_date <= v_month_end;
+        
+        -- выводим результат для текущего месяца
+        DBMS_OUTPUT.PUT_LINE('Vouchers in ' || TO_CHAR(v_month_start, 'Month YYYY') || ': ' || v_sales_count);
+      END;
+    END;
+  END LOOP;
+END;
+
+EXEC COUNT_VOUCHERS_MONTH('20-05-2023', '20-12-2023');
+
+----------------------------VIEWS------------------------
+
+CREATE VIEW COST_HOTEL_INFO AS
+SELECT loc.country_name, loc.city_name, hot.hotel_name, hot.cost_for_day 
+FROM Hotel hot, Place loc WHERE hot.location_id = loc.location_id
+ORDER BY hot.cost_for_day DESC;
+
+SELECT * FROM COST_HOTEL_INFO;
+
+CREATE VIEW TOURS_FOR_ANY_WEEKS AS
+SELECT * FROM TOUR
+WHERE period > 7;
+
+SELECT * FROM TOURS_FOR_ANY_WEEKS;
+
+CREATE VIEW VOUCHER_INFO
+AS
+SELECT
+Voucher.voucher_id,
+Voucher.tour_date,
+Voucher.tour_id,
+Tour.tour_name,
+Transport.transport_name,
+Tour.period,
+Tour.explanation,
+Voucher.user_id,
+Users.user_firstname,
+Users.user_secondname,
+Users.user_age,
+Managers.manager_firstname,
+Managers.manager_secondname,
+Voucher.hotel_id,
+Hotel.location_id,
+Place.country_name,
+Place.city_name,
+Hotel.cost_for_day,
+Tour.period * Hotel.cost_for_day AS TO_PAY
+FROM Voucher INNER JOIN Tour ON Voucher.tour_id = Tour.tour_id
+INNER JOIN Transport ON Tour.transport_id = Transport.transport_id
+INNER JOIN Users ON Voucher.user_id = Users.user_id
+INNER JOIN Managers ON Voucher.manager_id = Managers.manager_id
+INNER JOIN Hotel ON Voucher.hotel_id = Hotel.hotel_id
+INNER JOIN Place ON Hotel.location_id = Place.location_id;
+
+SELECT * FROM VOUCHER_INFO;
+
+
+DROP VIEW COST_HOTEL_INFO;
+DROP VIEW TOURS_FOR_ANY_WEEKS;
+DROP VIEW VOUCHER_INFO;
+
+---------------------------TRIGGERS----------------------
+
+CREATE OR REPLACE TRIGGER PREVENT_TABLE_DELETION
+BEFORE DROP ON DATABASE
+DECLARE
+table_name VARCHAR2(30);
+BEGIN
+SELECT object_name INTO table_name
+FROM user_objects
+WHERE object_type = 'TABLE' AND object_name = UPPER(TRIM(SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')));
+IF table_name IS NOT NULL THEN
+RAISE_APPLICATION_ERROR(-20001, 'Deleting tables is not allowed!');
+END IF;
+END;
+
+CREATE OR REPLACE TRIGGER CHECK_USER_AGE
+BEFORE INSERT OR UPDATE ON Users
+FOR EACH ROW
+BEGIN
+    IF :NEW.user_age < 10 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Age cannot be less than 10 years');
+    END IF;
+END;
+
+CREATE OR REPLACE TRIGGER UPDATE_MANAGER_SALARY
+AFTER INSERT OR UPDATE OF manager_id ON Voucher
+FOR EACH ROW
+BEGIN
+UPDATE Managers SET salary = salary * 1.1 WHERE manager_id = :new.manager_id;
+END; 
+
+
+DROP TRIGGER PREVENT_TABLE_DELETION;
+DROP TRIGGER CHECK_USER_AGE;
+DROP TRIGGER UPDATE_MANAGER_SALARY;
+
+ALTER TRIGGER PREVENT_TABLE_DELETION DISABLE;
+ALTER TRIGGER PREVENT_TABLE_DELETION ENABLE;
+
+ALTER TRIGGER CHECK_USER_AGE DISABLE;
+ALTER TRIGGER CHECK_USER_AGE ENABLE;
+
+ALTER TRIGGER UPDATE_MANAGER_SALARY DISABLE;
+ALTER TRIGGER UPDATE_MANAGER_SALARY ENABLE;
+
+-----------------------------XML----------------
+
+----DIRECTORY----
+CREATE DIRECTORY XML_DIR AS 'C:\XML';
+
+----CREATE EXPORT_TO_XML----
+
+CREATE OR REPLACE FUNCTION export_to_xml(p_file_name VARCHAR2) RETURN BOOLEAN
+IS
+   l_ctx DBMS_XMLGEN.ctxhandle;
+   l_xml CLOB;
+   l_file UTL_FILE.file_type;
+BEGIN
+   -- Инициализация контекста
+   l_ctx := DBMS_XMLGEN.newcontext('SELECT * FROM Users');
+   
+   -- Получение XML-строки
+   l_xml := DBMS_XMLGEN.getxml(l_ctx);
+   
+   -- Закрытие контекста
+   DBMS_XMLGEN.closecontext(l_ctx);
+   
+   -- Создание XML-файла и запись данных в него
+   l_file := UTL_FILE.fopen('XML_DIR', p_file_name, 'w', 32767);
+   UTL_FILE.put_line(l_file, l_xml);
+   UTL_FILE.fclose(l_file);
+   
+   RETURN TRUE;
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.put_line('Error: ' || SQLERRM);
+      RETURN FALSE;
+END;
+
+DECLARE
+  l_result BOOLEAN;
+BEGIN
+  l_result := export_to_xml('XMLFILE.xml');
+  IF l_result THEN
+    DBMS_OUTPUT.put_line('Export successful');
+  ELSE
+    DBMS_OUTPUT.put_line('Export failed');
+  END IF;
+END;
+
+DROP FUNCTION export_to_xml; 
+----CREATE 
+
+CREATE GLOBAL TEMPORARY TABLE temp_users
+(
+    user_id NUMBER,
+    user_firstname VARCHAR2(255) not null,
+    user_secondname VARCHAR2(255) not null,
+    user_fathertname VARCHAR2(255),
+    user_age NUMBER
+) ON COMMIT PRESERVE ROWS;
+
+DROP TABLE temp_users;
+
+DROP PROCEDURE import_xml_file;
+CREATE OR REPLACE PROCEDURE import_xml_file
+AS
+   l_xml_raw RAW(32767);
+   l_xml CLOB;
+   l_file UTL_FILE.file_type;
+BEGIN
+   -- Открытие XML-файла
+   l_file := UTL_FILE.fopen('XML_DIR', 'XMLFILE.xml', 'r', 32767);
+
+   -- Чтение XML-файла в RAW-переменную
+   UTL_FILE.get_raw(l_file, l_xml_raw, DBMS_LOB.getlength(l_xml_raw));
+
+   -- Закрытие файла
+   UTL_FILE.fclose(l_file);
+
+   -- Преобразование RAW-данных в CLOB
+   l_xml := UTL_RAW.cast_to_varchar2(l_xml_raw);
+
+   -- Вставка данных во временную таблицу
+   INSERT INTO temp_users
+   SELECT *
+   FROM XMLTable('/ROWSET/ROW'
+                  PASSING XMLTYPE(l_xml)
+                  COLUMNS user_id NUMBER PATH 'USER_ID',
+                          user_firstname VARCHAR2(255) PATH 'USER_FIRSTNAME',
+                          user_secondname VARCHAR2(255) PATH 'USER_SECONDNAME',
+                          user_fathertname VARCHAR2(255) PATH 'USER_FATHERTNAME',
+                          user_age NUMBER PATH 'USER_AGE');
+END;
+
+EXEC import_xml_file;
+
+SELECT * FROM temp_users;
+
+---------------------------INSERT 100000-----------
+DECLARE
+start_time NUMBER;
+end_time NUMBER;
+BEGIN
+start_time := DBMS_UTILITY.get_time;
+FOR i IN 50..100050 LOOP
+INSERT INTO Transport (transport_id, transport_name)
+VALUES (i, 'Transport ' || i);
+END LOOP;
+end_time := DBMS_UTILITY.get_time;
+DBMS_OUTPUT.PUT_LINE('Execution time: ' || (end_time - start_time) || ' ms'); 
+END;
+DELETE FROM Transport
+WHERE transport_id BETWEEN 50 AND 100050;
+
+SELECT man.manager_firstname, man.manager_secondname, vou.user_id FROM Managers man INNER JOIN Voucher vou ON man.manager_id = vou.manager_id;
+

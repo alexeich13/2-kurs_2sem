@@ -1,0 +1,110 @@
+ALTER SESSION SET "_oracle_script" = TRUE;
+
+select * from dba_tablespaces;
+
+create tablespace TS_DAI
+datafile 'C:\app\orcl_wald\tablespaces\TS_DAI.dbf'
+size 7M
+autoextend on next 5M
+maxsize 30M
+extent management local;
+
+drop tablespace TS_DAI;
+
+CREATE ROLE RL_DAICORE;
+grant create session,
+create table,
+create procedure,
+create sequence,
+create view to RL_DAICORE;
+
+drop role RL_DAICORE;
+
+CREATE PROFILE PF_DAICORE LIMIT
+PASSWORD_LIFE_TIME 180
+SESSIONS_PER_USER 3
+FAILED_LOGIN_ATTEMPTS 7
+PASSWORD_LOCK_TIME 1
+PASSWORD_REUSE_TIME 10
+PASSWORD_GRACE_TIME DEFAULT
+CONNECT_TIME 180
+IDLE_TIME 30;
+
+drop profile PF_DAICORE;
+
+CREATE USER DAICORE IDENTIFIED BY 12345
+DEFAULT TABLESPACE TS_DAI
+QUOTA UNLIMITED ON TS_DAI
+PROFILE PF_DAICORE
+ACCOUNT UNLOCK 
+PASSWORD EXPIRE;
+
+GRANT RL_DAICORE to DAICORE;
+
+drop user DAICORE;
+
+create tablespace DAI_QDATA 
+datafile 'C:\app\orcl_wald\tablespaces\DAI_QDATA.dbf'
+size 10 m
+autoextend on next 2 m 
+maxsize 10 m
+offline
+extent management local;
+
+alter user DAICORE quota 2 m on TS_DAI;
+
+CREATE TABLE DAI_T (id_st number(5), name varchar2(5));
+
+INSERT INTO DAI_T(id_st, name)
+values(1, 'NBS');
+INSERT INTO DAI_T(id_st, name)
+values(2, 'FFF');
+INSERT INTO DAI_T(id_st, name)
+values(3, 'KKK');
+
+DROP TABLE DAI_T;
+
+select tablespace_name,
+block_size,
+initial_extent,
+initial_extent/block_size,
+extent_management,
+segment_space_management,
+bigfile
+from user_tablespaces;
+
+select segment_name, segment_type
+from dba_segments
+where segment_name = 'DAI_T';
+
+select segment_name, segment_type
+from dba_segments
+
+select segment_name from dba_segments where tablespace_name = 'DAI_QDATA'   
+
+select * from user_recyclebin;
+
+flashback table DAI_T to before drop;
+
+begin 
+for k in 4..1004
+loop
+insert into DAI_T values(k, 'AAA');
+end loop;
+commit;
+end;
+
+select extent_id, blocks, bytes from dba_extents where segment_name = 'DAI_T';
+
+select owner, segment_name, extent_id, file_id, block_id, blocks
+from dba_extents;
+
+select or replace trigger DAI_T_rowscn_trg
+before insert or update on DAI_T
+for each row
+begin
+  :new.ROWSCN := DBMS_FLACHBACK.GET_SYSTEM_CHANGE_NUMBER;
+END;
+
+drop tablespace DAI_QDATA including contents and datafiles;
+

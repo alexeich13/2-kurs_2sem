@@ -1,0 +1,81 @@
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.exe
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.deps.json
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.runtimeconfig.json
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.dll
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.pdb
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\MaterialDesignColors.dll
+C:\BSTU\lab6-7\bin\Debug\net6.0-windows\MaterialDesignThemes.Wpf.dll
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.csproj.AssemblyReference.cache
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Theme1.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Theme2.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\AddAndChangeWindow.g.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\ChangeProduct.g.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\MainWindow.g.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\SearchWindow.g.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\SortWindow.g.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\App.g.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7_MarkupCompile.cache
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7_MarkupCompile.lref
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\App.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\AddAndChangeWindow.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\ChangeProduct.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\English.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\MainWindow.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Russian.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\SearchWindow.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\SortWindow.baml
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.g.resources
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.GeneratedMSBuildEditorConfig.editorconfig
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.AssemblyInfoInputs.cache
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.AssemblyInfo.cs
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.csproj.CoreCompileInputs.cache
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.csproj.CopyComplete
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.dll
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\refint\Laba_6_7.dll
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.pdb
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.genruntimeconfig.cache
+C:\BSTU\lab6-7\obj\Debug\net6.0-windows\ref\Laba_6_7.dll
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.exe
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.deps.json
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.runtimeconfig.json
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.dll
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\Laba_6_7.pdb
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\MaterialDesignColors.dll
+C:\BSTU\2 kurs\lab6-7\bin\Debug\net6.0-windows\MaterialDesignThemes.Wpf.dll
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.csproj.AssemblyReference.cache
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Theme1.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Theme2.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\AddAndChangeWindow.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\ChangeProduct.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\MainWindow.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\SearchWindow.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\SortWindow.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\App.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7_MarkupCompile.cache
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7_MarkupCompile.lref
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\App.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\AddAndChangeWindow.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\ChangeProduct.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\English.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\MainWindow.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Russian.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\SearchWindow.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\SortWindow.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.g.resources
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.GeneratedMSBuildEditorConfig.editorconfig
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.AssemblyInfoInputs.cache
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.AssemblyInfo.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.csproj.CoreCompileInputs.cache
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.csproj.CopyComplete
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.dll
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\refint\Laba_6_7.dll
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.pdb
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Laba_6_7.genruntimeconfig.cache
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\ref\Laba_6_7.dll
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\UndoRedo.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\UndoRedo.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Box.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\Box.baml
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\UserTBox.g.cs
+C:\BSTU\2 kurs\lab6-7\obj\Debug\net6.0-windows\UserTBox.baml

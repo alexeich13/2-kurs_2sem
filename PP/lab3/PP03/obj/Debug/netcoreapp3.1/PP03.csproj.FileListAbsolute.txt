@@ -1,0 +1,16 @@
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\PP03.exe
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\PP03.deps.json
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\PP03.runtimeconfig.json
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\PP03.runtimeconfig.dev.json
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\PP03.dll
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\PP03.pdb
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\Lec03LibN.dll
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\bin\Debug\netcoreapp3.1\Lec03LibN.pdb
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.csproj.AssemblyReference.cache
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.AssemblyInfoInputs.cache
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.AssemblyInfo.cs
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.csproj.CoreCompileInputs.cache
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.csproj.CopyComplete
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.dll
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.pdb
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\PP03\obj\Debug\netcoreapp3.1\PP03.genruntimeconfig.cache

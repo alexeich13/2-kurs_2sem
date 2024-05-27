@@ -1,0 +1,779 @@
+fileFormatVersion: 2
+guid: e156b7a450fc36c408fbe83f6c966133
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Barrel
+    100002: Barrel 1
+    100004: Barrel 2
+    100006: Box009
+    100008: Cylinder001
+    100010: Cylinder004
+    100012: Line001
+    100014: Main 1
+    100016: Main 10
+    100018: Main 100
+    100020: Main 101
+    100022: Main 102
+    100024: Main 103
+    100026: Main 104
+    100028: Main 105
+    100030: Main 106
+    100032: Main 107
+    100034: Main 108
+    100036: Main 109
+    100038: Main 11
+    100040: Main 110
+    100042: Main 111
+    100044: Main 112
+    100046: Main 113
+    100048: Main 114
+    100050: Main 115
+    100052: Main 116
+    100054: Main 117
+    100056: Main 118
+    100058: Main 119
+    100060: Main 12
+    100062: Main 120
+    100064: Main 121
+    100066: Main 122
+    100068: Main 123
+    100070: Main 124
+    100072: Main 125
+    100074: Main 126
+    100076: Main 127
+    100078: Main 128
+    100080: Main 129
+    100082: Main 13
+    100084: Main 130
+    100086: Main 14
+    100088: Main 15
+    100090: Main 16
+    100092: Main 17
+    100094: Main 18
+    100096: Main 19
+    100098: Main 2
+    100100: Main 20
+    100102: Main 21
+    100104: Main 22
+    100106: Main 23
+    100108: Main 24
+    100110: Main 25
+    100112: Main 26
+    100114: Main 27
+    100116: Main 28
+    100118: Main 29
+    100120: Main 3
+    100122: Main 30
+    100124: Main 31
+    100126: Main 32
+    100128: Main 33
+    100130: Main 34
+    100132: Main 35
+    100134: Main 36
+    100136: Main 37
+    100138: Main 38
+    100140: Main 39
+    100142: Main 4
+    100144: Main 40
+    100146: Main 41
+    100148: Main 42
+    100150: Main 43
+    100152: Main 44
+    100154: Main 45
+    100156: Main 46
+    100158: Main 47
+    100160: Main 48
+    100162: Main 49
+    100164: Main 5
+    100166: Main 50
+    100168: Main 51
+    100170: Main 52
+    100172: Main 53
+    100174: Main 54
+    100176: Main 55
+    100178: Main 56
+    100180: Main 57
+    100182: Main 58
+    100184: Main 59
+    100186: Main 6
+    100188: Main 60
+    100190: Main 61
+    100192: Main 62
+    100194: Main 63
+    100196: Main 64
+    100198: Main 65
+    100200: Main 66
+    100202: Main 67
+    100204: Main 68
+    100206: Main 69
+    100208: Main 7
+    100210: Main 70
+    100212: Main 71
+    100214: Main 72
+    100216: Main 73
+    100218: Main 74
+    100220: Main 75
+    100222: Main 76
+    100224: Main 77
+    100226: Main 78
+    100228: Main 79
+    100230: Main 8
+    100232: Main 80
+    100234: Main 81
+    100236: Main 82
+    100238: Main 83
+    100240: Main 84
+    100242: Main 85
+    100244: Main 86
+    100246: Main 87
+    100248: Main 88
+    100250: Main 89
+    100252: Main 9
+    100254: Main 90
+    100256: Main 91
+    100258: Main 92
+    100260: Main 93
+    100262: Main 94
+    100264: Main 95
+    100266: Main 96
+    100268: Main 97
+    100270: Main 98
+    100272: Main 99
+    100274: //RootNode
+    100276: Tower
+    100278: Tube002
+    100280: Barrel11111
+    100282: Tower222
+    400000: Barrel
+    400002: Barrel 1
+    400004: Barrel 2
+    400006: Box009
+    400008: Cylinder001
+    400010: Cylinder004
+    400012: Line001
+    400014: Main 1
+    400016: Main 10
+    400018: Main 100
+    400020: Main 101
+    400022: Main 102
+    400024: Main 103
+    400026: Main 104
+    400028: Main 105
+    400030: Main 106
+    400032: Main 107
+    400034: Main 108
+    400036: Main 109
+    400038: Main 11
+    400040: Main 110
+    400042: Main 111
+    400044: Main 112
+    400046: Main 113
+    400048: Main 114
+    400050: Main 115
+    400052: Main 116
+    400054: Main 117
+    400056: Main 118
+    400058: Main 119
+    400060: Main 12
+    400062: Main 120
+    400064: Main 121
+    400066: Main 122
+    400068: Main 123
+    400070: Main 124
+    400072: Main 125
+    400074: Main 126
+    400076: Main 127
+    400078: Main 128
+    400080: Main 129
+    400082: Main 13
+    400084: Main 130
+    400086: Main 14
+    400088: Main 15
+    400090: Main 16
+    400092: Main 17
+    400094: Main 18
+    400096: Main 19
+    400098: Main 2
+    400100: Main 20
+    400102: Main 21
+    400104: Main 22
+    400106: Main 23
+    400108: Main 24
+    400110: Main 25
+    400112: Main 26
+    400114: Main 27
+    400116: Main 28
+    400118: Main 29
+    400120: Main 3
+    400122: Main 30
+    400124: Main 31
+    400126: Main 32
+    400128: Main 33
+    400130: Main 34
+    400132: Main 35
+    400134: Main 36
+    400136: Main 37
+    400138: Main 38
+    400140: Main 39
+    400142: Main 4
+    400144: Main 40
+    400146: Main 41
+    400148: Main 42
+    400150: Main 43
+    400152: Main 44
+    400154: Main 45
+    400156: Main 46
+    400158: Main 47
+    400160: Main 48
+    400162: Main 49
+    400164: Main 5
+    400166: Main 50
+    400168: Main 51
+    400170: Main 52
+    400172: Main 53
+    400174: Main 54
+    400176: Main 55
+    400178: Main 56
+    400180: Main 57
+    400182: Main 58
+    400184: Main 59
+    400186: Main 6
+    400188: Main 60
+    400190: Main 61
+    400192: Main 62
+    400194: Main 63
+    400196: Main 64
+    400198: Main 65
+    400200: Main 66
+    400202: Main 67
+    400204: Main 68
+    400206: Main 69
+    400208: Main 7
+    400210: Main 70
+    400212: Main 71
+    400214: Main 72
+    400216: Main 73
+    400218: Main 74
+    400220: Main 75
+    400222: Main 76
+    400224: Main 77
+    400226: Main 78
+    400228: Main 79
+    400230: Main 8
+    400232: Main 80
+    400234: Main 81
+    400236: Main 82
+    400238: Main 83
+    400240: Main 84
+    400242: Main 85
+    400244: Main 86
+    400246: Main 87
+    400248: Main 88
+    400250: Main 89
+    400252: Main 9
+    400254: Main 90
+    400256: Main 91
+    400258: Main 92
+    400260: Main 93
+    400262: Main 94
+    400264: Main 95
+    400266: Main 96
+    400268: Main 97
+    400270: Main 98
+    400272: Main 99
+    400274: //RootNode
+    400276: Tower
+    400278: Tube002
+    400280: Barrel11111
+    400282: Tower222
+    2100000: 'Material #5'
+    2100002: 'Material #4'
+    2300000: Barrel 1
+    2300002: Barrel 2
+    2300004: Box009
+    2300006: Cylinder001
+    2300008: Cylinder004
+    2300010: Line001
+    2300012: Main 1
+    2300014: Main 10
+    2300016: Main 100
+    2300018: Main 101
+    2300020: Main 102
+    2300022: Main 103
+    2300024: Main 104
+    2300026: Main 105
+    2300028: Main 106
+    2300030: Main 107
+    2300032: Main 108
+    2300034: Main 109
+    2300036: Main 11
+    2300038: Main 110
+    2300040: Main 111
+    2300042: Main 112
+    2300044: Main 113
+    2300046: Main 114
+    2300048: Main 115
+    2300050: Main 116
+    2300052: Main 117
+    2300054: Main 118
+    2300056: Main 119
+    2300058: Main 12
+    2300060: Main 120
+    2300062: Main 121
+    2300064: Main 122
+    2300066: Main 123
+    2300068: Main 124
+    2300070: Main 125
+    2300072: Main 126
+    2300074: Main 127
+    2300076: Main 128
+    2300078: Main 129
+    2300080: Main 13
+    2300082: Main 130
+    2300084: Main 14
+    2300086: Main 15
+    2300088: Main 16
+    2300090: Main 17
+    2300092: Main 18
+    2300094: Main 19
+    2300096: Main 2
+    2300098: Main 20
+    2300100: Main 21
+    2300102: Main 22
+    2300104: Main 23
+    2300106: Main 24
+    2300108: Main 25
+    2300110: Main 26
+    2300112: Main 27
+    2300114: Main 28
+    2300116: Main 29
+    2300118: Main 3
+    2300120: Main 30
+    2300122: Main 31
+    2300124: Main 32
+    2300126: Main 33
+    2300128: Main 34
+    2300130: Main 35
+    2300132: Main 36
+    2300134: Main 37
+    2300136: Main 38
+    2300138: Main 39
+    2300140: Main 4
+    2300142: Main 40
+    2300144: Main 41
+    2300146: Main 42
+    2300148: Main 43
+    2300150: Main 44
+    2300152: Main 45
+    2300154: Main 46
+    2300156: Main 47
+    2300158: Main 48
+    2300160: Main 49
+    2300162: Main 5
+    2300164: Main 50
+    2300166: Main 51
+    2300168: Main 52
+    2300170: Main 53
+    2300172: Main 54
+    2300174: Main 55
+    2300176: Main 56
+    2300178: Main 57
+    2300180: Main 58
+    2300182: Main 59
+    2300184: Main 6
+    2300186: Main 60
+    2300188: Main 61
+    2300190: Main 62
+    2300192: Main 63
+    2300194: Main 64
+    2300196: Main 65
+    2300198: Main 66
+    2300200: Main 67
+    2300202: Main 68
+    2300204: Main 69
+    2300206: Main 7
+    2300208: Main 70
+    2300210: Main 71
+    2300212: Main 72
+    2300214: Main 73
+    2300216: Main 74
+    2300218: Main 75
+    2300220: Main 76
+    2300222: Main 77
+    2300224: Main 78
+    2300226: Main 79
+    2300228: Main 8
+    2300230: Main 80
+    2300232: Main 81
+    2300234: Main 82
+    2300236: Main 83
+    2300238: Main 84
+    2300240: Main 85
+    2300242: Main 86
+    2300244: Main 87
+    2300246: Main 9
+    2300248: Main 90
+    2300250: Main 91
+    2300252: Main 92
+    2300254: Main 93
+    2300256: Main 94
+    2300258: Main 95
+    2300260: Main 96
+    2300262: Main 97
+    2300264: Main 98
+    2300266: Main 99
+    2300268: Tube002
+    2300270: Barrel
+    3300000: Barrel 1
+    3300002: Barrel 2
+    3300004: Box009
+    3300006: Cylinder001
+    3300008: Cylinder004
+    3300010: Line001
+    3300012: Main 1
+    3300014: Main 10
+    3300016: Main 100
+    3300018: Main 101
+    3300020: Main 102
+    3300022: Main 103
+    3300024: Main 104
+    3300026: Main 105
+    3300028: Main 106
+    3300030: Main 107
+    3300032: Main 108
+    3300034: Main 109
+    3300036: Main 11
+    3300038: Main 110
+    3300040: Main 111
+    3300042: Main 112
+    3300044: Main 113
+    3300046: Main 114
+    3300048: Main 115
+    3300050: Main 116
+    3300052: Main 117
+    3300054: Main 118
+    3300056: Main 119
+    3300058: Main 12
+    3300060: Main 120
+    3300062: Main 121
+    3300064: Main 122
+    3300066: Main 123
+    3300068: Main 124
+    3300070: Main 125
+    3300072: Main 126
+    3300074: Main 127
+    3300076: Main 128
+    3300078: Main 129
+    3300080: Main 13
+    3300082: Main 130
+    3300084: Main 14
+    3300086: Main 15
+    3300088: Main 16
+    3300090: Main 17
+    3300092: Main 18
+    3300094: Main 19
+    3300096: Main 2
+    3300098: Main 20
+    3300100: Main 21
+    3300102: Main 22
+    3300104: Main 23
+    3300106: Main 24
+    3300108: Main 25
+    3300110: Main 26
+    3300112: Main 27
+    3300114: Main 28
+    3300116: Main 29
+    3300118: Main 3
+    3300120: Main 30
+    3300122: Main 31
+    3300124: Main 32
+    3300126: Main 33
+    3300128: Main 34
+    3300130: Main 35
+    3300132: Main 36
+    3300134: Main 37
+    3300136: Main 38
+    3300138: Main 39
+    3300140: Main 4
+    3300142: Main 40
+    3300144: Main 41
+    3300146: Main 42
+    3300148: Main 43
+    3300150: Main 44
+    3300152: Main 45
+    3300154: Main 46
+    3300156: Main 47
+    3300158: Main 48
+    3300160: Main 49
+    3300162: Main 5
+    3300164: Main 50
+    3300166: Main 51
+    3300168: Main 52
+    3300170: Main 53
+    3300172: Main 54
+    3300174: Main 55
+    3300176: Main 56
+    3300178: Main 57
+    3300180: Main 58
+    3300182: Main 59
+    3300184: Main 6
+    3300186: Main 60
+    3300188: Main 61
+    3300190: Main 62
+    3300192: Main 63
+    3300194: Main 64
+    3300196: Main 65
+    3300198: Main 66
+    3300200: Main 67
+    3300202: Main 68
+    3300204: Main 69
+    3300206: Main 7
+    3300208: Main 70
+    3300210: Main 71
+    3300212: Main 72
+    3300214: Main 73
+    3300216: Main 74
+    3300218: Main 75
+    3300220: Main 76
+    3300222: Main 77
+    3300224: Main 78
+    3300226: Main 79
+    3300228: Main 8
+    3300230: Main 80
+    3300232: Main 81
+    3300234: Main 82
+    3300236: Main 83
+    3300238: Main 84
+    3300240: Main 85
+    3300242: Main 86
+    3300244: Main 87
+    3300246: Main 9
+    3300248: Main 90
+    3300250: Main 91
+    3300252: Main 92
+    3300254: Main 93
+    3300256: Main 94
+    3300258: Main 95
+    3300260: Main 96
+    3300262: Main 97
+    3300264: Main 98
+    3300266: Main 99
+    3300268: Tube002
+    3300270: Barrel
+    4300000: Main
+    4300002: Main
+    4300004: Main
+    4300006: Main
+    4300008: Main
+    4300010: Main
+    4300012: Main
+    4300014: Main
+    4300016: Main
+    4300018: Main
+    4300020: Main
+    4300022: Main
+    4300024: Main
+    4300026: Main
+    4300028: Main
+    4300030: Main
+    4300032: Main
+    4300034: Main
+    4300036: Main
+    4300038: Main
+    4300040: Main
+    4300042: Main
+    4300044: Main
+    4300046: Main
+    4300048: Main
+    4300050: Main
+    4300052: Main
+    4300054: Main
+    4300056: Main
+    4300058: Main
+    4300060: Main
+    4300062: Main
+    4300064: Main
+    4300066: Main
+    4300068: Main
+    4300070: Main
+    4300072: Main
+    4300074: Main
+    4300076: Main
+    4300078: Main
+    4300080: Main
+    4300082: Main
+    4300084: Main
+    4300086: Main
+    4300088: Main
+    4300090: Main
+    4300092: Main
+    4300094: Main
+    4300096: Main
+    4300098: Main
+    4300100: Main
+    4300102: Main
+    4300104: Main
+    4300106: Main
+    4300108: Main
+    4300110: Main
+    4300112: Main
+    4300114: Main
+    4300116: Main
+    4300118: Main
+    4300120: Main
+    4300122: Main
+    4300124: Main
+    4300126: Main
+    4300128: Main
+    4300130: Main
+    4300132: Main
+    4300134: Main
+    4300136: Main
+    4300138: Main
+    4300140: Main
+    4300142: Main
+    4300144: Main
+    4300146: Main
+    4300148: Main
+    4300150: Main
+    4300152: Main
+    4300154: Main
+    4300156: Main
+    4300158: Main
+    4300160: Main
+    4300162: Main
+    4300164: Main
+    4300166: Main
+    4300168: Main
+    4300170: Main
+    4300172: Main
+    4300174: Main
+    4300176: Main
+    4300178: Main
+    4300180: Main
+    4300182: Main
+    4300184: Main
+    4300186: Main
+    4300188: Main
+    4300190: Main
+    4300192: Main
+    4300194: Main
+    4300196: Main
+    4300198: Main
+    4300200: Main
+    4300202: Main
+    4300204: Main
+    4300206: Main
+    4300208: Main
+    4300210: Main
+    4300212: Main
+    4300214: Main
+    4300216: Main
+    4300218: Main
+    4300220: Main
+    4300222: Main
+    4300224: Main
+    4300226: Main
+    4300228: Main
+    4300230: Main
+    4300232: Main
+    4300234: Main
+    4300236: Main
+    4300238: Main
+    4300240: Main
+    4300242: Main
+    4300244: Main
+    4300246: Cylinder001
+    4300248: Main
+    4300250: Main
+    4300252: Main
+    4300254: Main
+    4300256: Main
+    4300258: Tube002
+    4300260: Box009
+    4300262: Line001
+    4300264: Cylinder004
+    4300266: Barrel
+    4300268: Barrel
+    9500000: //RootNode
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 1
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 0
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

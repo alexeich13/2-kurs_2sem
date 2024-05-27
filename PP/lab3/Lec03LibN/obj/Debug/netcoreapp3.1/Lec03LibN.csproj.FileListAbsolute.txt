@@ -1,0 +1,9 @@
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\bin\Debug\netcoreapp3.1\Lec03LibN.deps.json
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\bin\Debug\netcoreapp3.1\Lec03LibN.dll
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\bin\Debug\netcoreapp3.1\Lec03LibN.pdb
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\obj\Debug\netcoreapp3.1\Lec03LibN.csproj.AssemblyReference.cache
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\obj\Debug\netcoreapp3.1\Lec03LibN.AssemblyInfoInputs.cache
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\obj\Debug\netcoreapp3.1\Lec03LibN.AssemblyInfo.cs
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\obj\Debug\netcoreapp3.1\Lec03LibN.csproj.CoreCompileInputs.cache
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\obj\Debug\netcoreapp3.1\Lec03LibN.dll
+C:\BSTU\2 kurs\2 kurs 2 sem\PP\Lec03LibN\obj\Debug\netcoreapp3.1\Lec03LibN.pdb

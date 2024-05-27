@@ -1,0 +1,54 @@
+select * from v$sga;
+
+select sum(value) from v$sga;
+
+select 
+component,
+current_size,
+max_size,
+last_oper_mode,
+last_oper_time,
+granule_size,
+current_size/granule_size as Ratio
+from v$sga_dynamic_components
+where current_size > 0;
+
+select
+component,
+min_size,
+current_size
+from v$sga_dynamic_components;
+
+select sum(bytes) from v$sgastat where name = 'free memory';
+
+show parameter sga;
+
+create table DAI(l int) storage(buffer_pool keep);
+create table IAD(l int) storage(buffer_pool DEFAULT);
+insert into DAI values(1);
+insert into IAD values(1);
+commit;
+
+drop table DAI;
+drop table IAD;
+
+select segment_name, segment_type, tablespace_name, buffer_pool from user_segments
+where segment_name in ('DAI', 'IAD');
+
+show parameter log_buffer;
+
+select pool, name, bytes from v$sgastat where pool = 'large pool';
+
+select username, service_name, server from v$session where username is not null;
+
+select * from v$bgprocess;
+
+select * from v$process;
+
+select * from v$bgprocess where name = 'DBW0';
+
+select name, network_name, pdb from v$services;
+
+select name, value from v$parameter;
+
+

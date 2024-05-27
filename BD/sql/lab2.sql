@@ -1,0 +1,85 @@
+ALTER SESSION SET "_oracle_script" = TRUE;
+
+create tablespace TS_DAI
+datafile 'TS_DAI.dbf'
+size 7M
+autoextend on next 5M
+maxsize 30M
+extent management local;
+
+drop tablespace TS_DAI;
+
+create temporary tablespace TS_DAI_TEMP
+tempfile 'TS_DAI_TEMP.dbf'
+size 5M
+autoextend on next 3M
+maxsize 20M
+extent management local;
+
+drop tablespace TS_DAI_TEMP;
+
+select TABLESPACE_NAME, STATUS, 
+contents logging from SYS.DBA_TABLESPACES;
+
+select FILE_NAME, TABLESPACE_NAME, STATUS, MAXBYTES,
+USER_BYTES FROM DBA_DATA_FILES
+UNION
+select FILE_NAME, TABLESPACE_NAME, STATUS, MAXBYTES,
+USER_BYTES FROM DBA_TEMP_FILES;
+
+CREATE ROLE RL_DAICORE;
+grant create session,
+create table,
+create procedure,
+create sequence,
+create view to RL_DAICORE;
+
+select * from dba_roles where role like 'RL_DAICORE';
+
+select * from dba_sys_privs where grantee = 'RL_DAICORE';
+
+drop role RL_DAICORE;
+
+CREATE PROFILE PF_DAICORE LIMIT
+PASSWORD_LIFE_TIME 180
+SESSIONS_PER_USER 3
+FAILED_LOGIN_ATTEMPTS 7
+PASSWORD_LOCK_TIME 1
+PASSWORD_REUSE_TIME 10
+PASSWORD_GRACE_TIME DEFAULT
+CONNECT_TIME 180
+IDLE_TIME 30;
+
+drop profile PF_DAICORE;
+
+SELECT * FROM DBA_PROFILES;
+
+SELECT * FROM DBA_PROFILES WHERE PROFILE = 'PF_DAICORE';
+
+SELECT * FROM DBA_PROFILES WHERE PROFILE = 'DEFAULT';
+
+CREATE USER DAICORE IDENTIFIED BY 12345
+DEFAULT TABLESPACE TS_DAI
+QUOTA UNLIMITED ON TS_DAI
+TEMPORARY TABLESPACE TS_DAI_TEMP
+PROFILE PF_DAICORE
+ACCOUNT UNLOCK 
+PASSWORD EXPIRE;
+
+CREATE TABLE DAI_T (id_st number(5), name varchar2(5));
+
+INSERT INTO DAI_T(id_st, name)
+values(1, NBS);
+INSERT INTO DAI_T(id_st, name)
+values(2, FFF);
+
+DROP TABLE DAI_T;
+
+ALTER USER DAICORE
+DEFAULT TABLESPACE TS_DAI QUOTA 2 M ON TS_DAI;
+
+ALTER TABLESPACE TS_DAI OFFLINE;
+
+ALTER TABLESPACE TS_DAI ONLINE;
+
+

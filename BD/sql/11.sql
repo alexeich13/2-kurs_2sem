@@ -1,0 +1,5 @@
+alter session set "_ORACLE_SCRIPT"=true;  
+CREATE USER ALEXEY IDENTIFIED BY 75980;
+GRANT ALL PRIVILEGES TO ALEXEY;
+
+select * from Bookings;

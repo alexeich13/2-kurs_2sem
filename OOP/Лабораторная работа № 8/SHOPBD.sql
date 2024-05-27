@@ -1,0 +1,13 @@
+CREATE TABLE SHOP(
+ID_PRODUCT INT PRIMARY KEY,
+NAME_PRODUCT NVARCHAR(100),
+PRICE_PRODUCT INT,
+COUNT_PRODUCT INT
+);
+
+INSERT INTO SHOP(ID_PRODUCT, NAME_PRODUCT, PRICE_PRODUCT, COUNT_PRODUCT)
+VALUES (1, '—ок €блочный', 3, 30),
+(2, '—ок апельсиновый', 4, 30),
+(3, '—ок гранатовый', 6, 30),
+(4, '—ок виноградный', 8, 30),
+(5, '—ок томатный', 2, 30);

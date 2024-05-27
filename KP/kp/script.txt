@@ -1,0 +1,72 @@
+-----------------USER------------
+EXEC cp_all_voucher;
+
+EXEC cp_all_tour;
+
+EXEC cp_search_tour_by_place('Флоренция');
+
+EXEC cp_search_tour_for_period(3, 18);
+
+SELECT * FROM cp_cost_hotel_info;
+
+SELECT * FROM cp_voucher_info;
+
+EXEC cp_insert_voucher(3, 1, 2, '19-10-2023', 5);
+commit;
+
+---------------MANAGER------------
+EXEC cp_all_voucher;
+
+EXEC cp_all_tour;
+
+EXEC cp_search_tour_by_place('Барселона');
+
+EXEC cp_insert_tour('Ереван', 'Описание16', 3, 11);
+
+EXEC cp_update_tour(12, 'Берлин', 'Описание16', 3, 11);
+
+EXEC cp_delete_tour(12);
+
+--------------ADMINISTRATOR-------------
+
+EXEC cp_all_voucher;
+
+EXEC cp_all_tour;
+
+EXEC cp_all_managers;
+
+DROP TABLE TRANSPORT;
+
+ALTER TRIGGER PREVENT_TABLE_DELETION DISABLE;
+
+ALTER TRIGGER PREVENT_TABLE_DELETION ENABLE;
+
+DECLARE
+start_time NUMBER;
+end_time NUMBER;
+BEGIN
+start_time := DBMS_UTILITY.get_time;
+FOR i IN 50..100050 LOOP
+INSERT INTO Transport (transport_id, transport_name)
+VALUES (i, 'Transport ' || i);
+END LOOP;
+end_time := DBMS_UTILITY.get_time;
+DBMS_OUTPUT.PUT_LINE('Execution time: ' || (end_time - start_time) || ' ms'); 
+END;
+DELETE FROM Transport
+WHERE transport_id BETWEEN 50 AND 100050;
+
+EXEC INSERT_MANAGERS('Павел', 'Заяц', 'Кролик', 500);
+SELECT * FROM MANAGERS;
+
+EXEC cp_insert_voucher(6, 1, 2, '19-10-2023', 5);
+EXEC cp_delete_voucher(13);
+
+ALTER TRIGGER UPDATE_MANAGER_SALARY DISABLE;
+ALTER TRIGGER UPDATE_MANAGER_SALARY ENABLE;
+
+EXEC cp_count_vouchers_month('20-05-2023', '20-12-2023');
+EXEC cp_count_for_period('21.10.2023', '23.10.2024');
+
+
+

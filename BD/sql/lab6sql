@@ -1,0 +1,11 @@
+create pfile = 'DAI_PFILE.ORA' from spfile;
+
+create spfile = 'DAI_SPFILE.ora' from pfile = 'DAI_PFILE.ora';
+
+alter system set open_cursors = 350 scope = SPFILE;
+
+select name from v$controlfile;
+
+alter database backup controlfile to trace;
+
+select * from v$diag_info;

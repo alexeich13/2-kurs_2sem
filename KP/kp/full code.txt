@@ -1,0 +1,2113 @@
+SELECT TABLESPACE_NAME, sTATUS, CONTENTS LOGGING FROM SYS.dba_tablespaces;
+    
+CREATE TABLESPACE TS_MAIN
+    DATAFILE 'C:\app\orcl_wald\TablespaceCourse\TS_MAIN.dbf'
+    SIZE 500M
+    AUTOEXTEND ON
+    EXTENT MANAGEMENT LOCAL;
+
+CREATE TEMPORARY TABLESPACE TS_TEMP
+    TEMPFILE 'C:\app\orcl_wald\TablespaceCourse\TS_TEMP.dbf'
+    SIZE 100M
+    AUTOEXTEND ON
+    EXTENT MANAGEMENT LOCAL;
+    
+DROP TABLESPACE TS_MAIN;
+DROP TABLESPACE TS_TEMP;
+
+ALTER TABLESPACE TS_MAIN
+    OFFLINE;
+    
+ALTER TABLESPACE TS_MAIN
+    ONLINE;
+CREATE TABLE ORGANIZATION_INFO
+(
+    unp NUMBER(9) NOT NULL,
+    legal_name VARCHAR2(1000) NOT NULL,
+    short_name VARCHAR2(1000) NOT NULL,
+    mns NUMBER(3) NOT NULL,
+    iban VARCHAR2(28) NOT NULL,
+    bik VARCHAR2(8) NOT NULL,
+    date_registration_mns DATE NOT NULL,
+    address VARCHAR2(1000) NOT NULL,
+    CONSTRAINT PK_ORGANIZATION_INFO PRIMARY KEY(UNP) USING INDEX  ENABLE
+);
+
+CREATE TABLE INSURANCE --тип страховки
+(
+    id_insurance NUMBER(12) NOT NUL
+    name_insurance VARCHAR2(1000) NOT NULL, --название вида страховки
+    description_insurance VARCHAR2(1000), --описание
+    CONSTRAINT PK_INSURANCE PRIMARY KEY(ID_INSURANCE) USING INDEX  ENABLE
+);
+
+CREATE TABLE INSURED_EVENT --тип страхового случая
+(
+    id_insured_event NUMBER(12) NOT NULL,
+    name_insured_event VARCHAR2(1000) NOT NULL, --название страхового случая
+    id_insurance NUMBER(12) NOT NULL, --тип страховки
+    description_insured_event VARCHAR2(1000), --описание страхового случая
+    CONSTRAINT PK_INSURED_EVENT PRIMARY KEY(ID_INSURED_EVENT) USING INDEX  ENABLE,
+    CONSTRAINT FK_INSURED_EVENT_INSURANCE FOREIGN KEY(ID_INSURANCE) REFERENCES INSURANCE(ID_INSURANCE)
+);
+
+CREATE TABLE CALCULATIONS --тип страховки
+(
+    id_calculations NUMBER(12) NOT NULL,
+    id_insured_event NUMBER(12) NOT NULL, --тип страхового случая
+    annual_fee NUMBER(9) NOT NULL, --годовой взнос
+    payout  NUMBER(9), --выплата
+    description_calculations VARCHAR2(1000), --описание
+    CONSTRAINT PK_CALCULATIONS PRIMARY KEY(ID_CALCULATIONS) USING INDEX  ENABLE,
+    CONSTRAINT FK_CALCULATIONS_INSURED_EVENT FOREIGN KEY(ID_INSURED_EVENT) REFERENCES INSURED_EVENT(ID_INSURED_EVENT)
+);
+
+CREATE TABLE AGENTE
+(
+	id_agente NUMBER(12) NOT NULL,
+	first_name VARCHAR2(1000) NOT NULL,
+	second_name VARCHAR2(1000) NOT NULL,
+	middle_name VARCHAR2(1000),
+    birthday DATE,
+    passport_number VARCHAR2(9) NOT NULL,
+	passport_id VARCHAR2(16) NOT NULL,
+    unp VARCHAR2(9), --УНП
+    salary_iban NUMBER(16), --зарплатный счет
+	address VARCHAR2(1000) NOT NULL,
+	phone_number NUMBER(9),
+    registration DATE NOT NULL, --дата приемв на работу
+    CONSTRAINT PK_AGENTE PRIMARY KEY(ID_AGENTE) USING INDEX  ENABLE
+);
+
+CREATE TABLE CLIENTE
+(
+	id_cliente NUMBER(12) NOT NULL,
+	first_name VARCHAR2(1000) NOT NULL,
+	second_name VARCHAR2(1000) NOT NULL,
+	middle_name VARCHAR2(1000),
+    birthday DATE,
+    passport_number VARCHAR(9) NOT NULL,
+	passport_id VARCHAR2(16) NOT NULL,
+    unp VARCHAR2(9), --УНП
+    placework VARCHAR2(1000), --место работы
+	address VARCHAR2(1000),
+	phone_number NUMBER(9),
+    CONSTRAINT PK_CLIENTE PRIMARY KEY(ID_CLIENTE) USING INDEX  ENABLE
+);
+
+CREATE TABLE POLICYE --полис
+(
+	id_policye NUMBER(12) NOT NULL,
+    id_agente NUMBER(12) NOT NULL,
+    id_cliente NUMBER(12) NOT NULL,
+    id_insured_event NUMBER(12) NOT NULL,  -- тип страхового случая
+    organization_info NUMBER(9) NOT NULL, --информация организации
+    id_calculations NUMBER(12) NOT NULL, -- страховые расчеты
+    object_insurance VARCHAR2(1000) NOT NULL, -- объект страхования
+    concluded DATE, --дата заключения
+    validity DATE, --срок действия
+    CONSTRAINT PK_POLICYE PRIMARY KEY(ID_POLICYE) USING INDEX  ENABLE,
+    CONSTRAINT FK_POLICYE_CLIENTE FOREIGN KEY(ID_CLIENTE) REFERENCES CLIENTE(ID_CLIENTE), 
+    CONSTRAINT FK_POLICYE_AGENTE FOREIGN KEY(ID_AGENTE) REFERENCES AGENTE(ID_AGENTE),
+    CONSTRAINT FK_POLICYE_CALCULATIONS FOREIGN KEY(ID_CALCULATIONS) REFERENCES CALCULATIONS(ID_CALCULATIONS),
+    CONSTRAINT FK_POLICYE_INSURED_EVENT FOREIGN KEY(ID_INSURED_EVENT) REFERENCES INSURED_EVENT(ID_INSURED_EVENT),
+    CONSTRAINT FK_POLICYE_ORGANIZATION_INFO FOREIGN KEY(ORGANIZATION_INFO) REFERENCES ORGANIZATION_INFO(UNP)
+);
+
+CREATE TABLE OPERATION --бугалтерия
+(
+    id_operation NUMBER(16) NOT NULL,
+    id_policye  NUMBER(12) NOT NULL,
+    paid NUMBER(9),
+    received NUMBER(9),
+    operation_date TIMESTAMP,
+    CONSTRAINT PK_OPERATION PRIMARY KEY(ID_OPERATION) USING INDEX  ENABLE,
+    CONSTRAINT FK_OPERATION_POLICYE FOREIGN KEY(ID_POLICYE) REFERENCES POLICYE(ID_POLICYE)
+);
+
+
+DROP TABLE ORGANIZATION_INFO;
+DROP TABLE CALCULATIONS;
+DROP TABLE INSURED_EVENT;
+DROP TABLE INSURANCE;
+DROP TABLE AGENTE;
+DROP TABLE CLIENTE;
+DROP TABLE POLICYE;
+DROP TABLE OPERATION;
+
+
+
+ 
+alter session set "_ORACLE_SCRIPT"=true;
+alter session set "_ORACLE_SCRIPT"=false;
+
+SELECT * fROM dba_roles;
+SELECT * FROM dba_sys_privs;
+SELECT * FROM dba_profiles;
+SELECT username, account_status, lock_date FROM dba_users;
+
+----------------CLIENT
+CREATE ROLE RL_CLIENTE;
+GRANT CREATE SESSION TO RL_CLIENTE;
+GRANT EXECUTE ON MY_POLICYE TO RL_CLIENTE;
+
+CREATE USER CLIENTE IDENTIFIED BY 75980
+    DEFAULT TABLESPACE TS_MAIN QUOTA UNLIMITED ON TS_MAIN
+    TEMPORARY TABLESPACE TS_TEMP
+    ACCOUNT UNLOCK;
+GRANT RL_CLIENTE TO CLIENTE;
+
+
+----------------AGENTE
+CREATE ROLE RL_AGENTE;
+GRANT CREATE SESSION TO RL_AGENTE;
+--GRANT SELECT ON POLICYE TO RL_AGENTE;
+--GRANT SELECT ON CLIENTE TO RL_AGENTE;
+--GRANT SELECT ON AGENTE TO RL_AGENTE;
+--GRANT SELECT ON INSURED_EVENT TO RL_AGENTE;
+--GRANT SELECT ON INSURANCE TO RL_AGENTE;
+--GRANT SELECT ON ORGANIZATION_INFO TO RL_AGENTE;
+--GRANT SELECT ON CALCULATIONS TO RL_AGENTE;
+
+GRANT SELECT ON ALL_INSURED_EVENT TO RL_AGENTE;
+GRANT SELECT ON ACTIVE_POLICY TO RL_AGENTE;
+GRANT SELECT ON INACTIVE_POLICY TO RL_AGENTE;
+GRANT SELECT ON LAST_30DAY_POLICY TO RL_AGENTE;
+
+GRANT EXECUTE ON INSERT_POLICYE TO RL_AGENTE;
+GRANT EXECUTE ON INSERT_CLIENTE TO RL_AGENTE;
+GRANT EXECUTE ON INSERT_CALCULATIONS TO RL_AGENTE;
+
+GRANT EXECUTE ON UPDATE_POLICYE TO RL_AGENTE;
+GRANT EXECUTE ON UPDATE_CLIENTE TO RL_AGENTE;
+GRANT EXECUTE ON UPDATE_CALCULATIONS TO RL_AGENTE;
+
+GRANT EXECUTE ON SEARCH_POLICYE_PASSPORT_ID TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_POLICYE TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_CLIENTE TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_CLIENTE_FSM TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_CALCULATIONS_ID TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_INSURED_EVENT_ID TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_INSURED_EVENT_NAME TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_AGENTE TO RL_AGENTE;
+GRANT EXECUTE ON SEARCH_AGENTE_FSM TO RL_AGENTE;
+GRANT EXECUTE ON ALL_POLICYE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_INSURANCE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_CLIENTE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_AGENTE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_CALCULATIONS TO RL_AGENTE;
+
+
+CREATE USER AGENTE IDENTIFIED BY 75980
+    DEFAULT TABLESPACE TS_MAIN QUOTA UNLIMITED ON TS_MAIN
+    TEMPORARY TABLESPACE TS_TEMP
+    ACCOUNT UNLOCK;
+GRANT RL_AGENTE TO AGENTE;
+
+
+----------------CHIEF --босс
+CREATE ROLE RL_CHIEF;
+--GRANT CREATE SESSION TO RL_CHIEF;
+--GRANT SELECT ON POLICYE TO RL_CHIEF;
+--GRANT SELECT ON CLIENTE TO RL_CHIEF;
+--GRANT SELECT ON AGENTE TO RL_CHIEF;
+--GRANT SELECT ON INSURED_EVENT TO RL_CHIEF;
+--GRANT SELECT ON INSURANCE TO RL_CHIEF;
+--GRANT SELECT ON ORGANIZATION_INFO TO RL_CHIEF;
+--GRANT SELECT ON CALCULATIONS TO RL_CHIEF;
+--GRANT SELECT ON OPERATION TO RL_CHIEF;
+
+GRANT SELECT ON ALL_INSURED_EVENT TO RL_CHIEF;
+GRANT SELECT ON ACTIVE_POLICY TO RL_CHIEF;
+GRANT SELECT ON INACTIVE_POLICY TO RL_CHIEF;
+GRANT SELECT ON LAST_30DAY_POLICY TO RL_CHIEF;
+GRANT SELECT ON LAST_30DAY_OPERATIONS TO RL_CHIEF;
+GRANT SELECT ON LAST_30DAY_PAID TO RL_CHIEF;
+GRANT SELECT ON LAST_30DAY_RECEIVED TO RL_CHIEF;
+GRANT SELECT ON ALL_YE_AGENTE TO RL_CHIEF;
+GRANT SELECT ON ALL_AGENTE TO RL_CHIEF;
+
+GRANT EXECUTE ON SUM_PAID TO RL_CHIEF;
+GRANT EXECUTE ON SUM_RECEIVED TO RL_CHIEF;
+
+GRANT EXECUTE ON INSERT_POLICYE TO RL_CHIEF;
+GRANT EXECUTE ON INSERT_CLIENTE TO RL_CHIEF;
+GRANT EXECUTE ON INSERT_CALCULATIONS TO RL_CHIEF;
+GRANT EXECUTE ON INSERT_AGENTE TO RL_CHIEF;
+GRANT EXECUTE ON INSERT_INSURANCE TO RL_CHIEF;
+GRANT EXECUTE ON INSERT_INSURED_EVENT TO RL_CHIEF;
+
+GRANT EXECUTE ON UPDATE_POLICYE TO RL_CHIEF;
+GRANT EXECUTE ON UPDATE_CLIENTE TO RL_CHIEF;
+GRANT EXECUTE ON UPDATE_CALCULATIONS TO RL_CHIEF;
+GRANT EXECUTE ON UPDATE_AGENTE TO RL_CHIEF;
+GRANT EXECUTE ON UPDATE_INSURANCE TO RL_CHIEF;
+GRANT EXECUTE ON UPDATE_INSURED_EVENT TO RL_CHIEF;
+GRANT EXECUTE ON UPDATE_ORGANIZATION_INFO TO RL_CHIEF;
+
+GRANT EXECUTE ON SEARCH_POLICYE TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_CLIENTE TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_CLIENTE_FSM TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_AGENTE_FSM TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_CALCULATIONS_ID TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_INSURED_EVENT_ID TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_INSURED_EVENT_NAME TO RL_CHIEF;
+GRANT EXECUTE ON SEARCH_AGENTE TO RL_CHIEF;
+GRANT EXECUTE ON ALL_POLICYE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_INSURANCE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_CLIENTE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_AGENTE TO RL_AGENTE;
+GRANT EXECUTE ON ALL_CALCULATIONS TO RL_AGENTE;
+
+CREATE USER CHIEF IDENTIFIED BY 75980
+    DEFAULT TABLESPACE TS_MAIN QUOTA UNLIMITED ON TS_MAIN
+    TEMPORARY TABLESPACE TS_TEMP
+    ACCOUNT UNLOCK;
+GRANT RL_CHIEF TO CHIEF;
+
+
+----------------ACCOUNTANT --бугалтер
+CREATE ROLE RL_ACCOUNTANT;
+
+GRANT CREATE SESSION TO RL_ACCOUNTANT;
+--GRANT SELECT ON POLICYE TO RL_ACCOUNTANT;
+--GRANT SELECT ON INSURED_EVENT TO RL_ACCOUNTANT;
+--GRANT SELECT ON INSURANCE TO RL_ACCOUNTANT;
+--GRANT SELECT ON ORGANIZATION_INFO TO RL_ACCOUNTANT;
+--GRANT SELECT ON OPERATION TO RL_ACCOUNTANT;
+
+GRANT SELECT ON ALL_INSURED_EVENT TO RL_ACCOUNTANT;
+GRANT SELECT ON LAST_30DAY_OPERATIONS TO RL_ACCOUNTANT;
+GRANT SELECT ON LAST_30DAY_PAID TO RL_ACCOUNTANT;
+GRANT SELECT ON LAST_30DAY_RECEIVED TO RL_ACCOUNTANT;
+
+GRANT EXECUTE ON SUM_PAID TO RL_ACCOUNTANT;
+GRANT EXECUTE ON SUM_RECEIVED TO RL_ACCOUNTANT;
+
+GRANT EXECUTE ON INSERT_OPERATION TO RL_ACCOUNTANT;
+
+GRANT EXECUTE ON UPDATE_OPERATION TO RL_ACCOUNTANT;
+
+GRANT EXECUTE ON SEARCH_CALCULATIONS_ID TO RL_ACCOUNTANT;
+GRANT EXECUTE ON SEARCH_INSURED_EVENT_ID TO RL_ACCOUNTANT;
+GRANT EXECUTE ON SEARCH_INSURED_EVENT_NAME TO RL_ACCOUNTANT;
+GRANT EXECUTE ON SEARCH_OPERATION_ID_POLICYE TO RL_ACCOUNTANT;
+GRANT EXECUTE ON ALL_OPERATION TO RL_AGENTE;
+
+CREATE USER ACCOUNTANT IDENTIFIED BY 75980
+    DEFAULT TABLESPACE TS_MAIN QUOTA UNLIMITED ON TS_MAIN
+    TEMPORARY TABLESPACE TS_TEMP
+    ACCOUNT UNLOCK;
+GRANT RL_ACCOUNTANT TO ACCOUNTANT;
+
+
+--course_admin 
+--GRANT ALL PRIVILEGES TO COURSE_ADMIN;
+DROP USER CLIENTE CASCADE;
+DROP ROLE RL_CLIENTE;
+DROP USER AGENTE CASCADE;
+DROP ROLE RL_AGENTE;
+DROP USER CHIEF CASCADE;
+DROP ROLE RL_CHIEF;
+DROP USER ACCOUNTANT CASCADE;
+DROP ROLE RL_ACCOUNTANT;
+----------------POLICYE
+CREATE INDEX FK_POLICYE_CLIENTE ON POLICYE(ID_AGENTE);
+CREATE INDEX FK_POLICYE_AGENTE ON POLICYE(ID_CLIENTE);
+CREATE INDEX FK_POLICYE_CALCULATIONS ON POLICYE(ID_CALCULATIONS);
+CREATE INDEX FK_POLICYE_INSURED_EVENT ON POLICYE(ID_INSURED_EVENT);
+CREATE INDEX FK_POLICYE_ORGANIZATION_INFO ON POLICYE(ORGANIZATION_INFO);
+
+----------------CALCULATIONS
+CREATE INDEX FK_CALCULATIONS_INSURED_EVENT ON CALCULATIONS(ID_INSURED_EVENT);
+
+----------------OPERATION
+CREATE INDEX FK_OPERATION_POLICYE ON OPERATION(ID_POLICYE);
+
+DROP INDEX FK_POLICYE_CLIENTE;
+DROP INDEX FK_POLICY_AGENTE;
+DROP INDEX FK_POLICYE_CALCULATIONS;
+DROP INDEX FK_POLICYE_INSURED_EVENT;
+DROP INDEX FK_POLICYE_ORGANIZATION_INFO;
+DROP INDEX FK_CALCULATIONS_INSURED_EVENT;
+DROP INDEX FK_OPERATION_POLICYE;
+
+CREATE VIEW ACTIVE_POLICY AS --Активные полисы
+SELECT * FROM POLICYE
+WHERE (concluded <= CURRENT_DATE) AND (validity >= CURRENT_DATE);
+
+CREATE VIEW INACTIVE_POLICY AS --Нективные полисы
+SELECT * FROM POLICYE
+WHERE validity <= CURRENT_DATE;
+
+CREATE VIEW LAST_30DAY_POLICY AS --Зарегестрировнне полисы за последние 30 дней
+SELECT pol.ID_POLICYE, ag.ID_AGENTE FROM POLICYE pol, AGENTE ag 
+WHERE (concluded <= CURRENT_DATE) AND (concluded >= CURRENT_DATE - 30);
+
+CREATE VIEW LAST_30DAY_OPERATIONS AS --Все операции за последние 30 дней
+SELECT pol.id_cliente, pol.id_policye, oper.ID_OPERATION, oper.PAID, oper.RECEIVED, pol.concluded FROM OPERATION oper, POLICYE pol
+WHERE ((pol.concluded <= CURRENT_DATE) AND (pol.concluded >= CURRENT_DATE-30)) AND (pol.ID_POLICYE = oper.ID_POLICYE);
+
+CREATE VIEW LAST_30DAY_PAID AS --Выплаты за последние 30 дней
+SELECT pol.id_cliente, pol.id_policye, oper.ID_OPERATION, oper.PAID, pol.concluded FROM OPERATION oper, POLICYE pol
+WHERE ((pol.concluded <= CURRENT_DATE) AND (pol.concluded >= CURRENT_DATE-30)) AND (pol.ID_POLICYE = oper.ID_POLICYE);
+
+CREATE VIEW LAST_30DAY_RECEIVED AS --Зачисления за последние 30 дней
+SELECT pol.id_cliente, pol.id_policye, oper.ID_OPERATION, oper.RECEIVED, pol.concluded FROM OPERATION oper, POLICYE pol
+WHERE ((pol.concluded <= CURRENT_DATE) AND (pol.concluded >= CURRENT_DATE-30)) AND (pol.ID_POLICYE = oper.ID_POLICYE);
+
+CREATE VIEW ALL_YE_AGENTE AS --все агенты ,заключившие полисы и количество полисов
+SELECT count(*) as Quantity, ag.id_agente, ag.First_Name, ag.second_name, ag.middle_name, ag.unp FROM AGENTE ag, POLICYE pol 
+WHERE ag.ID_AGENTE = pol.ID_AGENTE
+GROUP BY ag.id_agente, ag.First_Name, ag.second_name, ag.middle_name, ag.unp;
+
+--CREATE VIEW MY_POLICY AS
+--SELECT pol.* FROM POLICYE pol
+--WHERE pol.id_cliente = '1';
+
+DROP VIEW ACTIVE_POLICY;
+DROP VIEW INACTIVE_POLICY;
+DROP VIEW LAST_30DAY_POLICY;
+DROP VIEW LAST_30DAY_OPERATIONS;
+DROP VIEW LAST_30DAY_PAID;
+DROP VIEW LAST_30DAY_RECEIVED;
+DROP VIEW ALL_YE_AGENTE;
+DROP VIEW ALL_AGENTE;
+--DROP VIEW MY_POLICY;
+
+
+SELECT * FROM ACTIVE_POLICY;
+SELECT * FROM INACTIVE_POLICY;
+SELECT * FROM LAST_30DAY_POLICY;
+SELECT * FROM LAST_30DAY_OPERATIONS;
+SELECT * FROM LAST_30DAY_PAID;
+SELECT * FROM LAST_30DAY_RECEIVED;
+SELECT * FROM ALL_YE_AGENTE;
+CREATE MATERIALIZED VIEW ALL_INSURED_EVENT AS --Все страховые случаи и вид страховки
+SELECT ev.NAME_INSURED_EVENT, ins.NAME_INSURANCE FROM INSURED_EVENT ev, INSURANCE ins
+WHERE ev.ID_INSURANCE = ins.ID_INSURANCE;
+
+DROP MATERIALIZED VIEW ALL_INSURED_EVENT;
+
+SELECT * FROM ALL_INSURED_EVENT;
+----------------INSURANCE
+CREATE SEQUENCE ID_INSURANCE_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+    
+----------------INSURED_EVENT
+CREATE SEQUENCE ID_INSURED_EVENT_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+
+----------------CALCULATIONS
+CREATE SEQUENCE ID_CALCULATIONS_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+   
+----------------AGENTE 
+CREATE SEQUENCE ID_AGENTE_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+
+----------------CLIENTE
+CREATE SEQUENCE ID_CLIENTE_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+    
+----------------POLICYE
+CREATE SEQUENCE ID_POLICYE_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+    
+----------------OPERATION
+CREATE SEQUENCE ID_OPERATION_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MAXVALUE 100000000000
+    NOCYCLE;
+
+DROP SEQUENCE ID_POLICYE_SEQ;
+DROP SEQUENCE ID_CLIENTE_SEQ;
+DROP SEQUENCE ID_AGENTE_SEQ; 
+DROP SEQUENCE ID_CALCULATIONS_SEQ;
+DROP SEQUENCE ID_INSURED_EVENT_SEQ; 
+DROP SEQUENCE ID_INSURANCE_SEQ;
+DROP SEQUENCE ID_OPERATION_SEQ;
+----------------ORGANIZATION_INFO
+CREATE OR REPLACE PROCEDURE INSERT_ORGANIZATION_INFO (
+    unp ORGANIZATION_INFO.unp%TYPE,
+    legal_name ORGANIZATION_INFO.legal_name%TYPE,
+    short_name ORGANIZATION_INFO.short_name%TYPE,
+    mns ORGANIZATION_INFO.mns%TYPE,
+    iban ORGANIZATION_INFO.iban%TYPE,
+    bik ORGANIZATION_INFO.bik%TYPE,
+    date_registration_mns ORGANIZATION_INFO.date_registration_mns%TYPE,
+    address ORGANIZATION_INFO.address%TYPE) AS
+BEGIN
+    INSERT INTO ORGANIZATION_INFO (unp, legal_name, short_name, mns, iban, bik, date_registration_mns, address)
+    VALUES (unp,
+    legal_name,
+    short_name,
+    mns,
+    iban,
+    bik,
+    date_registration_mns,
+    address);
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+
+
+----------------INSURANCE
+CREATE OR REPLACE PROCEDURE INSERT_INSURANCE (
+    name_insurance INSURANCE.name_insurance%TYPE,
+    description_insurance INSURANCE.DESCRIPTION_INSURANCE%TYPE) AS
+BEGIN
+    INSERT INTO INSURANCE (ID_INSURANCE, NAME_INSURANCE, DESCRIPTION_INSURANCE)
+    VALUES (ID_INSURANCE_SEQ.NEXTVAL,
+    name_insurance,
+    description_insurance);
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------INSURED_EVENT
+CREATE OR REPLACE PROCEDURE INSERT_INSURED_EVENT (
+    name_insured_event INSURED_EVENT.name_insured_event%TYPE,
+    id_insurance INSURED_EVENT.id_insurance%TYPE,
+    description_insured_event INSURED_EVENT.description_insured_event%TYPE) AS
+BEGIN
+    INSERT INTO INSURED_EVENT (ID_INSURED_EVENT, NAME_INSURED_EVENT, ID_INSURANCE, DESCRIPTION_INSURED_EVENT)
+    VALUES (ID_INSURED_EVENT_SEQ.NEXTVAL,
+    name_insured_event,
+    id_insurance,
+    description_insured_event);
+END;
+/
+
+
+----------------CALCULATIONS
+CREATE OR REPLACE PROCEDURE INSERT_CALCULATIONS (
+    id_insured_event CALCULATIONS.id_insured_event%TYPE,
+    annual_fee CALCULATIONS.annual_fee%TYPE,
+    payout CALCULATIONS.payout%TYPE,
+    description_calculations CALCULATIONS.description_calculations%TYPE) AS
+BEGIN
+    INSERT INTO CALCULATIONS (ID_CALCULATIONS, ID_INSURED_EVENT, ANNUAL_FEE, PAYOUT, DESCRIPTION_CALCULATIONS)
+    VALUES (ID_CALCULATIONS_SEQ.NEXTVAL,
+    id_insured_event,
+    annual_fee,
+    payout,
+    description_calculations);
+END;
+/
+
+
+----------------AGENTE
+CREATE OR REPLACE PROCEDURE INSERT_AGENTE (
+    first_name AGENTE.FIRST_NAME%TYPE,
+    second_name AGENTE.SECOND_NAME%TYPE,
+    middle_name AGENTE.MIDDLE_NAME%TYPE,
+    birthday AGENTE.BIRTHDAY%TYPE,
+    passport_number AGENTE.PASSPORT_NUMBER%TYPE,
+    passport_id AGENTE.PASSPORT_ID%TYPE,
+    unp AGENTE.unp%TYPE,
+    salary_iban AGENTE.salary_iban%TYPE,
+    address AGENTE.address%TYPE,
+    phone_number AGENTE.phone_number%TYPE,
+    registration AGENTE.registration%TYPE) AS
+BEGIN
+    INSERT INTO AGENTE (ID_AGENTE, FIRST_NAME, SECOND_NAME, MIDDLE_NAME, BIRTHDAY, PASSPORT_NUMBER, PASSPORT_ID, UNP, SALARY_IBAN, ADDRESS, PHONE_NUMBER, REGISTRATION)
+    VALUES (ID_AGENTE_SEQ.NEXTVAL,
+    first_name,
+    second_name,
+    middle_name,
+    birthday,
+    passport_number,
+    passport_id,
+    unp,
+    salary_iban,
+    address,
+    phone_number,
+    registration);
+END;
+/
+
+
+----------------CLIENTE
+CREATE OR REPLACE PROCEDURE INSERT_CLIENTE (
+    first_name CLIENTE.FIRST_NAME%TYPE,
+    second_name CLIENTE.SECOND_NAME%TYPE,
+    middle_name CLIENTE.MIDDLE_NAME%TYPE,
+    birthday CLIENTE.BIRTHDAY%TYPE,
+    passport_number CLIENTE.PASSPORT_NUMBER%TYPE,
+    passport_id CLIENTE.PASSPORT_ID%TYPE,
+    unp CLIENTE.unp%TYPE,
+    placework CLIENTE.placework%TYPE,
+    address CLIENTE.address%TYPE,
+    phone_number CLIENTE.phone_number%TYPE) AS
+BEGIN
+    INSERT INTO CLIENTE (ID_CLIENTE, FIRST_NAME, SECOND_NAME, MIDDLE_NAME, BIRTHDAY, PASSPORT_NUMBER, PASSPORT_ID, UNP, PLACEWORK, ADDRESS, PHONE_NUMBER)
+    VALUES (ID_CLIENTE_SEQ.NEXTVAL,
+    first_name,
+    second_name,
+    middle_name,
+    birthday,
+    passport_number,
+    passport_id,
+    unp,
+    placework,
+    address,
+    phone_number);
+END;
+/
+
+
+----------------POLICYE
+CREATE OR REPLACE PROCEDURE INSERT_POLICYE (
+    id_agente POLICYE.id_agente%TYPE,
+    id_cliente POLICYE.id_cliente%TYPE,
+    id_insured_event POLICYE.id_insured_event%TYPE,
+    organization_info POLICYE.organization_info%TYPE,
+    id_calculations POLICYE.id_calculations%TYPE,
+    object_insurance POLICYE.object_insurance%TYPE,
+    concluded POLICYE.concluded%TYPE,
+    validity POLICYE.validity%TYPE) AS
+BEGIN
+    INSERT INTO POLICYE (ID_POLICYE, ID_AGENTE, ID_CLIENTE, ID_INSURED_EVENT, ORGANIZATION_INFO, ID_CALCULATIONS, OBJECT_INSURANCE, CONCLUDED, VALIDITY)
+    VALUES (ID_POLICYE_SEQ.NEXTVAL,
+    id_agente,
+    id_cliente,
+    id_insured_event,
+    organization_info,
+    id_calculations,
+    object_insurance,
+    concluded,
+    validity);
+END;
+/
+
+
+----------------OPERATION
+CREATE OR REPLACE PROCEDURE INSERT_OPERATION (
+    id_policye OPERATION.id_policye%TYPE,
+    paid OPERATION.paid%TYPE,
+    received OPERATION.received%TYPE,
+    operation_date OPERATION.operation_date%TYPE) AS
+BEGIN
+    INSERT INTO OPERATION (ID_OPERATION, ID_POLICYE, PAID, RECEIVED, OPERATION_DATE)
+    VALUES (ID_OPERATION_SEQ.NEXTVAL,
+    id_policye,
+    paid,
+    received,
+    operation_date);
+END;
+/
+
+
+DROP PROCEDURE INSERT_ORGANIZATION_INFO;
+DROP PROCEDURE INSERT_INSURANCE;
+DROP PROCEDURE INSERT_INSURED_EVENT;
+DROP PROCEDURE INSERT_CALCULATIONS;
+DROP PROCEDURE INSERT_AGENTE;
+DROP PROCEDURE INSERT_CLIENTE;
+DROP PROCEDURE INSERT_POLICYE;
+DROP PROCEDURE INSERT_OPERATION;
+--
+EXEC INSERT_ORGANIZATION_INFO('123456789', 'WALD INSURANCE Enterprise', 'WALD Ins.', '101', '1234ABCD1234ABCD1234ABCD1234', 'ABCDEF12', '02-05-2023', 'Немига 1');
+--
+--
+EXEC INSERT_INSURANCE('Медицинское страхование', 'Описание');
+EXEC INSERT_INSURANCE('Транспортное страхование', 'Описание');
+EXEC INSERT_INSURANCE('Имущественное страхование', 'Описание');
+--
+--
+EXEC INSERT_INSURED_EVENT( 'Страхование от несчастных случаев и заболеваний',  '1', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Страхование от несчастных случаев и болезней на время поездки за границу',  '1', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Добровольное репродуктивное страхование женщины и родившегося ребенка (детей)',  '1', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Унифицированная программа страхования медицинских расходов',  '1', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Страхование от травм "Экспресс"',  '1', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Обязательное медицинское страхование иностранных граждан',  '1', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Обязательное страхование гражданской ответственности владельцев транспортных средств',  '2', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Автокаско (для легковых автомобилей)',  '2', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Добровольное страхование гражданской ответственности владельцев автотранспортных средств',  '2', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Зеленая карта',  '2', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Добровольное страхование расходов, связанных с эксплуатацией транспортных средств (технический ассистанс)',  '2', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Жилой дом/дача',  '3', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Квартира в многоквартирном жилом доме',  '3', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Домашнее имущество в жилом доме/даче',  '3', 'описание');
+EXEC INSERT_INSURED_EVENT( 'Домашнее имущество в квартире',  '3', 'описание');
+--
+--
+EXEC INSERT_AGENTE( 'Владимир', 'Лобанов', 'Дмитриевич', '21-10-2003', 'MP1234567', '1111222233334444', 'AB1234567', '1111222233334444', 'Одоевского 101А', '291112233', CURRENT_DATE);
+EXEC INSERT_AGENTE( 'Савелий', 'Калугин', 'Максимович', '11-12-2000', 'MP2345678', '1111222233334444', 'AB1234567', '1111222233334444', '847318, Московская область, город Москва, шоссе Будапештсткая, 07', '291709953', '21-06-2023');
+EXEC INSERT_AGENTE( 'Анисия', 'Федотова', 'Александровна', '18-08-2003', 'MP3456789', '1111222233334444', 'AB1234567', '1111222233334444', '560893, Московская область, город Москва, проезд Косиора, 33', '294975272', '13-05-2023');
+EXEC INSERT_AGENTE( 'Алиса', 'Федосеева', 'Игоревна', '03-12-2003', 'MP4567890', '1111222233334444', 'AB1234567', '1111222233334444', '525449, Московская область, город Москва, ул. Гоголя, 59', '298239039', '15-01-2023');
+EXEC INSERT_AGENTE( 'Фатима', 'Скворцова', 'Кирилловна', '05-01-2003', 'MP5678901', '1111222233334444', 'AB1234567', '1111222233334444', '468426, Московская область, город Москва, пл. Сталина, 54', '299423905', '18-01-2023');
+EXEC INSERT_AGENTE( 'Илья', 'Карасев', 'Никитич', '15-03-2003', 'MP6789012', '1111222233334444', 'AB1234567', '1111222233334444', '272544, Московская область, город Москва, пр. Домодедовская, 94', '297606149', '06-03-2023');
+EXEC INSERT_AGENTE( 'Анастасия', 'Денисова', 'Артёмовна', '08-05-2003', 'MP7890123', '1111222233334444', 'AB1234567', '1111222233334444', '350598, Московская область, город Москва, ул. Гагарина, 27', '294617441', '10-03-2023');
+EXEC INSERT_AGENTE( 'Иван', 'Логинов', 'Владимирович', '11-10-2003', 'MP8901234', '1111222233334444', 'AB1234567', '1111222233334444', '305937, Московская область, город Москва, бульвар Ломоносова, 20', '296536828', '11-04-2023');
+--
+--
+EXEC INSERT_CALCULATIONS( '1', '4000', '25000', 'описание');
+--
+--
+EXEC INSERT_CLIENTE( 'Алексей', 'Дрозд', 'Игоревич', '13-03-2004', 'MP1234567', '1111222233335555', 'AB1234567', 'ОАО "Белгазпромбанк", Экономист', 'Рокосовского 1', '291112233');
+--
+--
+EXEC INSERT_POLICYE( '1', '1000', '1', '123456789', '1', 'Мужчина, 20лет, рост 180, вес 70', CURRENT_DATE, '02-05-2033');
+--
+--
+EXEC INSERT_OPERATION('1', '0', '333',  CURRENT_TIMESTAMP);
+--
+
+
+SELECT * FROM ORGANIZATION_INFO;
+
+SELECT * FROM INSURANCE;
+SELECT ID_INSURANCE_SEQ.CURRVAL FROM dual;
+
+SELECT * FROM INSURED_EVENT;
+SELECT ID_INSURED_EVENT_SEQ.CURRVAL FROM dual;
+
+SELECT * FROM CALCULATIONS;
+SELECT ID_CALCULATIONS_SEQ.CURRVAL FROM dual;
+
+SELECT * FROM AGENTE;
+SELECT ID_AGENTE_SEQ.CURRVAL FROM dual;
+
+SELECT * FROM CLIENTE;
+SELECT ID_CLIENTE_SEQ.CURRVAL FROM dual;
+
+SELECT * FROM POLICYE;
+SELECT ID_POLICYE_SEQ.CURRVAL FROM dual;
+
+SELECT * FROM OPERATION;
+SELECT ID_OPERATION_SEQ.CURRVAL FROM dual;
+----------------ORGANIZATION_INFO
+CREATE OR REPLACE PROCEDURE UPDATE_ORGANIZATION_INFO (
+    u_unp ORGANIZATION_INFO.unp%TYPE,
+    u_legal_name ORGANIZATION_INFO.legal_name%TYPE,
+    u_short_name ORGANIZATION_INFO.short_name%TYPE,
+    u_mns ORGANIZATION_INFO.mns%TYPE,
+    u_iban ORGANIZATION_INFO.iban%TYPE,
+    u_bik ORGANIZATION_INFO.bik%TYPE,
+    u_date_registration_mns ORGANIZATION_INFO.date_registration_mns%TYPE,
+    u_address ORGANIZATION_INFO.address%TYPE) IS
+BEGIN
+    UPDATE ORGANIZATION_INFO 
+    SET 
+    ORGANIZATION_INFO.legal_name = u_legal_name,
+    ORGANIZATION_INFO.short_name = u_short_name,
+    ORGANIZATION_INFO.mns = u_mns,
+    ORGANIZATION_INFO.iban = u_iban,
+    ORGANIZATION_INFO.bik = u_bik,
+    ORGANIZATION_INFO.date_registration_mns = u_date_registration_mns,
+    ORGANIZATION_INFO.address = u_address
+    WHERE
+    ORGANIZATION_INFO.unp = u_unp;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------INSURANCE
+CREATE OR REPLACE PROCEDURE UPDATE_INSURANCE (
+    u_id_insurance INSURANCE.id_insurance%TYPE,
+    u_name_insurance INSURANCE.name_insurance%TYPE,
+    u_description_insurance INSURANCE.DESCRIPTION_INSURANCE%TYPE) AS
+BEGIN
+    UPDATE INSURANCE
+    SET 
+    INSURANCE.name_insurance = u_name_insurance,
+    INSURANCE.DESCRIPTION_INSURANCE = u_description_insurance
+    WHERE
+    INSURANCE.id_insurance = u_id_insurance;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------INSURED_EVENT
+CREATE OR REPLACE PROCEDURE UPDATE_INSURED_EVENT (
+    u_id_insured_event INSURED_EVENT.id_insured_event%TYPE,
+    u_name_insured_event INSURED_EVENT.name_insured_event%TYPE,
+    u_id_insurance INSURED_EVENT.id_insurance%TYPE,
+    u_description_insured_event INSURED_EVENT.description_insured_event%TYPE) AS
+BEGIN
+    UPDATE INSURED_EVENT 
+    SET
+    INSURED_EVENT.name_insured_event = u_name_insured_event,
+    INSURED_EVENT.id_insurance = u_id_insurance,
+    INSURED_EVENT.description_insured_event = u_description_insured_event
+    WHERE
+    INSURED_EVENT.id_insured_event = u_id_insured_event;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------CALCULATIONS
+CREATE OR REPLACE PROCEDURE UPDATE_CALCULATIONS (
+    u_id_calculations CALCULATIONS.id_calculations%TYPE,
+    u_id_insured_event CALCULATIONS.id_insured_event%TYPE,
+    u_annual_fee CALCULATIONS.annual_fee%TYPE,
+    u_payout CALCULATIONS.payout%TYPE,
+    u_description_calculations CALCULATIONS.description_calculations%TYPE) AS
+BEGIN
+    UPDATE CALCULATIONS
+    SET 
+    CALCULATIONS.id_insured_event = u_id_insured_event,
+    CALCULATIONS.annual_fee = u_annual_fee,
+    CALCULATIONS.payout = u_payout,
+    CALCULATIONS.description_calculations = u_description_calculations
+    WHERE
+    CALCULATIONS.id_calculations = u_id_calculations;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------AGENTE
+CREATE OR REPLACE PROCEDURE UPDATE_AGENTE (
+    u_id_agente AGENTE.ID_AGENTE%TYPE,
+    u_first_name AGENTE.FIRST_NAME%TYPE,
+    u_second_name AGENTE.SECOND_NAME%TYPE,
+    u_middle_name AGENTE.MIDDLE_NAME%TYPE,
+    u_birthday AGENTE.BIRTHDAY%TYPE,
+    u_passport_number AGENTE.PASSPORT_NUMBER%TYPE,
+    u_passport_id AGENTE.PASSPORT_ID%TYPE,
+    u_unp AGENTE.unp%TYPE,
+    u_salary_iban AGENTE.salary_iban%TYPE,
+    u_address AGENTE.address%TYPE,
+    u_phone_number AGENTE.phone_number%TYPE,
+    u_registration AGENTE.registration%TYPE) AS
+BEGIN
+    UPDATE AGENTE
+    SET 
+    AGENTE.FIRST_NAME = u_first_name,
+    AGENTE.SECOND_NAME = u_second_name,
+    AGENTE.MIDDLE_NAME = u_middle_name,
+    AGENTE.BIRTHDAY = u_birthday,
+    AGENTE.PASSPORT_NUMBER = u_passport_number,
+    AGENTE.PASSPORT_ID = u_passport_id,
+    AGENTE.unp = u_unp,
+    AGENTE.salary_iban = u_salary_iban,
+    AGENTE.address = u_address,
+    AGENTE.phone_number = u_phone_number,
+    AGENTE.registration = u_registration
+    WHERE
+    AGENTE.ID_AGENTE = u_id_agente;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------CLIENTE
+CREATE OR REPLACE PROCEDURE UPDATE_CLIENTE (
+    u_id_cliente CLIENTE.ID_CLIENTE%TYPE,
+    u_first_name CLIENTE.FIRST_NAME%TYPE,
+    u_second_name CLIENTE.SECOND_NAME%TYPE,
+    u_middle_name CLIENTE.MIDDLE_NAME%TYPE,
+    u_birthday CLIENTE.BIRTHDAY%TYPE,
+    u_passport_number CLIENTE.PASSPORT_NUMBER%TYPE,
+    u_passport_id CLIENTE.PASSPORT_ID%TYPE,
+    u_unp CLIENTE.unp%TYPE,
+    u_placework CLIENTE.placework%TYPE,
+    u_address CLIENTE.address%TYPE,
+    u_phone_number CLIENTE.phone_number%TYPE) AS
+BEGIN
+    UPDATE CLIENTE
+    SET 
+    CLIENTE.FIRST_NAME = u_first_name,
+    CLIENTE.SECOND_NAME = u_second_name,
+    CLIENTE.MIDDLE_NAME = u_middle_name,
+    CLIENTE.BIRTHDAY = u_birthday,
+    CLIENTE.PASSPORT_NUMBER = u_passport_number,
+    CLIENTE.PASSPORT_ID = u_passport_id,
+    CLIENTE.unp = u_unp,
+    CLIENTE.placework = u_placework,
+    CLIENTE.address = u_address,
+    CLIENTE.phone_number = u_phone_number
+    WHERE 
+    CLIENTE.ID_CLIENTE = u_id_cliente;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------POLICYE
+CREATE OR REPLACE PROCEDURE UPDATE_POLICYE (
+    u_id_policye POLICYE.id_policye%TYPE,
+    u_id_agente POLICYE.id_agente%TYPE,
+    u_id_cliente POLICYE.id_cliente%TYPE,
+    u_id_insured_event POLICYE.id_insured_event%TYPE,
+    u_organization_info POLICYE.organization_info%TYPE,
+    u_id_calculations POLICYE.id_calculations%TYPE,
+    u_object_insurance POLICYE.object_insurance%TYPE,
+    u_concluded POLICYE.concluded%TYPE,
+    u_validity POLICYE.validity%TYPE) AS
+BEGIN
+    UPDATE POLICYE 
+    SET 
+    POLICYE.id_agente = u_id_agente,
+    POLICYE.id_cliente = u_id_cliente,
+    POLICYE.id_insured_event = u_id_insured_event,
+    POLICYE.organization_info = u_organization_info,
+    POLICYE.id_calculations = u_id_calculations,
+    POLICYE.object_insurance = u_object_insurance,
+    POLICYE.concluded = u_concluded,
+    POLICYE.validity = u_validity
+    WHERE 
+    POLICYE.id_policye = u_id_policye;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------OPERATION
+CREATE OR REPLACE PROCEDURE UPDATE_OPERATION (
+    u_id_operation OPERATION.id_operation%TYPE,
+    u_id_policye OPERATION.id_policye%TYPE,
+    u_paid OPERATION.paid%TYPE,
+    u_received OPERATION.received%TYPE,
+    u_operation_date OPERATION.operation_date%TYPE) AS
+BEGIN
+    UPDATE OPERATION
+    SET 
+    OPERATION.id_operation = u_id_operation,
+    OPERATION.id_policye = u_id_policye,
+    OPERATION.paid =  u_paid,
+    OPERATION.received = u_received,
+    OPERATION.operation_date = u_operation_date
+    WHERE
+    OPERATION.id_operation = u_id_operation;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+DROP PROCEDURE UPDATE_ORGANIZATION_INFO;
+DROP PROCEDURE UPDATE_INSURANCE;
+DROP PROCEDURE UPDATE_INSURED_EVENT;
+DROP PROCEDURE UPDATE_CALCULATIONS;
+DROP PROCEDURE UPDATE_AGENTE;
+DROP PROCEDURE UPDATE_CLIENTE;
+DROP PROCEDURE UPDATE_POLICYE;
+DROP PROCEDURE UPDATE_OPERATION;
+--
+EXEC UPDATE_ORGANIZATION_INFO('123456789', 'WALD Enterprise ', 'WALD Ins.', '101', '1234ABCD1234ABCD1234ABCD1234', 'ABCDEF12', '02-05-2023', 'Немига 1'); --Первый параметр - УНП организации
+SELECT * FROM ORGANIZATION_INFO;
+--
+--
+EXEC UPDATE_INSURANCE( '1', 'Медицинское страхование', 'Описание');--Первый параметр - идентификатор для выбора строки
+SELECT * FROM INSURANCE;
+SELECT ID_INSURANCE_SEQ.CURRVAL FROM dual;
+--
+--
+EXEC UPDATE_INSURED_EVENT('1', 'Страхование от несчастных случаев и заболеваний',  '1', 'описание');--Первый параметр - идентификатор для выбора строки
+SELECT * FROM INSURED_EVENT;
+SELECT ID_INSURED_EVENT_SEQ.CURRVAL FROM dual;
+--
+--
+EXEC UPDATE_CALCULATIONS('1', '1', '4000', '25000', 'описание');--Первый параметр - идентификатор для выбора строки
+SELECT * FROM CALCULATIONS;
+SELECT ID_CALCULATIONS_SEQ.CURRVAL FROM dual;
+--
+--
+EXEC UPDATE_AGENTE('1', 'Владимир', 'Лобанов', 'Дмитриевич', '21-10-2003', 'MP1234567', '1111222233334444', 'AB1234567', '1111222233334444', 'Одоевского 101А', '291112233', '02-05-2023');--Первый параметр - идентификатор для выбора строки
+SELECT * FROM AGENTE;
+SELECT ID_AGENTE_SEQ.CURRVAL FROM dual;
+--
+--
+EXEC UPDATE_CLIENTE('1', 'Алексей', 'Дрозд', 'Игоревич', '13-03-2004', 'MP1234567', '1111222233334444', 'AB1234567', 'ОАО "Белгазпромбанк", Экономист', 'Рокосовского 1', '291112233');--Первый параметр - идентификатор для выбора строки
+SELECT * FROM CLIENTE;
+SELECT ID_CLIENTE_SEQ.CURRVAL FROM dual;
+--
+--
+EXEC UPDATE_POLICYE('1', '1', '1', '1', '1', '1', 'Мужчина, 20лет, рост 180, вес 70', '02-05-2023', '02-05-2013');--Первый параметр - идентификатор для выбора строки
+SELECT * FROM POLICYE;
+SELECT ID_POLICYE_SEQ.CURRVAL FROM dual;
+--
+--
+EXEC UPDATE_OPERATION('1', '1', '0', '333',  CURRENT_TIMESTAMP);--Первый параметр - идентификатор для выбора строки
+SELECT * FROM OPERATION;
+SELECT ID_OPERATION_SEQ.CURRVAL FROM dual;
+--
+
+-----------------------INSURANCE 
+CREATE OR REPLACE PROCEDURE ALL_INSURANCE AS
+BEGIN
+    DECLARE 
+    s_id_insurance   INSURANCE.ID_INSURANCE  % type;
+    s_name_insurance  INSURANCE.NAME_INSURANCE  % type;
+    s_description_insurance  INSURANCE.DESCRIPTION_INSURANCE  % type;
+    cursor c_insr is select * from INSURANCE;
+    BEGIN 
+        DBMS_OUTPUT.ENABLE (buffer_size => null);
+        for l_insr in c_insr
+            loop 
+                            s_id_insurance := l_insr.ID_INSURANCE;
+                            s_name_insurance:= l_insr.NAME_INSURANCE;
+                            s_description_insurance :=  l_insr.DESCRIPTION_INSURANCE;
+                DBMS_OUTPUT.PUT_LINE (s_id_insurance ||' | '|| s_name_insurance ||' | '|| s_description_insurance);
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+-----------------------CALCULATIONS
+CREATE OR REPLACE PROCEDURE ALL_CALCULATIONS AS
+BEGIN
+    DECLARE 
+    s_id_calculations  CALCULATIONS.ID_CALCULATIONS % type;
+    s_id_insured_event  CALCULATIONS.ID_INSURED_EVENT % type;
+    s_annual_fee  CALCULATIONS.ANNUAL_FEE % type;
+    s_payout   CALCULATIONS.PAYOUT % type;
+    s_description_calculations  CALCULATIONS.DESCRIPTION_CALCULATIONS % type;
+    cursor c_calc is select * from CALCULATIONS;
+    BEGIN 
+        DBMS_OUTPUT.ENABLE (buffer_size => null);
+        for l_calc in c_calc
+            loop 
+                            s_id_calculations := l_calc.ID_CALCULATIONS;
+                            s_id_insured_event:= l_calc.ID_INSURED_EVENT;
+                            s_annual_fee :=  l_calc.ANNUAL_FEE;
+                            s_payout :=  l_calc.PAYOUT;
+                            s_description_calculations :=  l_calc.DESCRIPTION_CALCULATIONS;
+                DBMS_OUTPUT.PUT_LINE (s_id_calculations ||' | '|| s_id_insured_event ||' | '|| s_annual_fee ||' | '|| s_payout ||' | '|| s_description_calculations);
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+-----------------------AGENTE
+CREATE OR REPLACE PROCEDURE ALL_AGENTE AS
+BEGIN
+    DECLARE 
+    s_id_agente AGENTE.ID_AGENTE % type;
+    s_first_name AGENTE.FIRST_NAME % type;
+    s_second_name AGENTE.SECOND_NAME % type;
+    s_middle_name AGENTE.MIDDLE_NAME % type;
+    s_birthday AGENTE.BIRTHDAY % type;
+    s_passport_number AGENTE.PASSPORT_NUMBER % type;
+    s_passport_id AGENTE.PASSPORT_ID % type;
+    s_unp AGENTE.UNP % type;
+    s_salary_iban AGENTE.SALARY_IBAN % type;
+    s_address AGENTE.ADDRESS % type;
+    s_phone_number AGENTE.PHONE_NUMBER % type;
+    s_registration AGENTE.REGISTRATION % type;
+    cursor c_agent is select * from AGENTE;
+    BEGIN 
+        DBMS_OUTPUT.ENABLE (buffer_size => null);
+        
+        for l_agent in c_agent
+            loop
+                            s_id_agente := l_agent.ID_AGENTE;
+                            s_first_name:= l_agent.FIRST_NAME;
+                            s_second_name :=  l_agent.SECOND_NAME;
+                            s_middle_name :=  l_agent.MIDDLE_NAME;
+                            s_birthday :=  l_agent.BIRTHDAY;
+                            s_passport_number :=  l_agent.PASSPORT_NUMBER;
+                            s_passport_id :=  l_agent.PASSPORT_ID;
+                            s_unp :=  l_agent.UNP;
+                            s_salary_iban :=  l_agent.SALARY_IBAN;
+                            s_address :=  l_agent.ADDRESS;
+                            s_phone_number :=  l_agent.PHONE_NUMBER;
+                            s_registration :=  l_agent.REGISTRATION;
+                DBMS_OUTPUT.PUT_LINE (s_id_agente ||' | '|| s_first_name ||' | '|| s_second_name ||' | '|| s_middle_name ||' | '|| s_birthday ||' | '|| s_passport_number ||' | '|| s_passport_id ||' | '|| s_unp ||' | '|| s_salary_iban ||' | '|| s_address ||' | '|| s_phone_number ||' | '|| s_registration);
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+-----------------------CLIENTE 
+CREATE OR REPLACE PROCEDURE ALL_CLIENTE AS
+BEGIN
+    DECLARE 
+    s_id_cliente CLIENTE.ID_CLIENTE % type;
+    s_first_name CLIENTE.FIRST_NAME % type;
+    s_second_name CLIENTE.SECOND_NAME % type;
+    s_middle_name CLIENTE.MIDDLE_NAME % type;
+    s_birthday CLIENTE.BIRTHDAY % type;
+    s_passport_number CLIENTE.PASSPORT_NUMBER % type;
+    s_passport_id CLIENTE.PASSPORT_ID % type;
+    s_unp CLIENTE.UNP % type;
+    s_placework  CLIENTE.PLACEWORK % type;
+    s_address CLIENTE.ADDRESS % type;
+    s_phone_number CLIENTE.PHONE_NUMBER % type;
+    cursor c_clint is select * from CLIENTE;
+    BEGIN 
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        for l_clint in c_clint
+            loop 
+                s_id_cliente := l_clint.ID_CLIENTE;
+                            s_first_name:= l_clint.FIRST_NAME;
+                            s_second_name :=  l_clint.SECOND_NAME;
+                            s_middle_name :=  l_clint.MIDDLE_NAME;
+                            s_birthday :=  l_clint.BIRTHDAY;
+                            s_passport_number :=  l_clint.PASSPORT_NUMBER;
+                            s_passport_id :=  l_clint.PASSPORT_ID;
+                            s_unp :=  l_clint.UNP;
+                            s_placework :=  l_clint.PLACEWORK;
+                            s_address :=  l_clint.ADDRESS;
+                            s_phone_number :=  l_clint.PHONE_NUMBER;
+                DBMS_OUTPUT.PUT_LINE (s_id_cliente ||' | '|| s_first_name ||' | '|| s_second_name ||' | '|| s_middle_name ||' | '|| s_birthday ||' | '|| s_passport_number ||' | '|| s_passport_id ||' | '|| s_unp ||' | '|| s_placework ||' | '|| s_address ||' | '|| s_phone_number);
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+-----------------------POLICYE
+CREATE OR REPLACE PROCEDURE ALL_POLICYE AS
+BEGIN
+    DECLARE 
+    s_id_policye POLICYE.ID_POLICYE % type;
+    s_id_agente POLICYE.ID_AGENTE % type;
+    s_id_cliente POLICYE.ID_CLIENTE % type;
+    s_id_insured_event POLICYE.ID_INSURED_EVENT % type;
+    s_organization_info POLICYE.ORGANIZATION_INFO % type;
+    s_id_calculations POLICYE.ID_CALCULATIONS % type;
+    s_object_insurance POLICYE.OBJECT_INSURANCE % type;
+    s_concluded POLICYE.CONCLUDED % type;
+    s_validity POLICYE.VALIDITY % type;
+    cursor c_polic is select * from POLICYE;
+    BEGIN 
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        for l_polic in c_polic
+            loop 
+                    s_id_policye := l_polic.ID_POLICYE;
+                    s_id_agente := l_polic.ID_AGENTE;
+                    s_id_cliente := l_polic.ID_CLIENTE;
+                    s_id_insured_event := l_polic.ID_INSURED_EVENT;
+                    s_organization_info := l_polic.ORGANIZATION_INFO;
+                    s_id_calculations := l_polic.ID_CALCULATIONS;
+                    s_object_insurance := l_polic.OBJECT_INSURANCE;
+                    s_concluded := l_polic.CONCLUDED;
+                    s_validity := l_polic.VALIDITY;
+            END LOOP;
+             DBMS_OUTPUT.PUT_LINE (s_id_policye ||' | '|| s_id_agente ||' | '|| s_id_cliente ||' | '|| s_id_insured_event ||' | '|| s_organization_info ||' | '|| s_id_calculations ||' | '|| s_object_insurance ||' | '|| s_concluded ||' | '|| s_validity);
+    END;
+    EXCEPTION
+    when others
+        then
+            DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+-----------------------OPERATION
+CREATE OR REPLACE PROCEDURE ALL_OPERATION AS
+BEGIN
+    DECLARE 
+    s_id_operation OPERATION.ID_OPERATION % type;
+    s_id_policye OPERATION.ID_POLICYE % type;
+    s_paid OPERATION.PAID % type;
+    s_received OPERATION.RECEIVED % type;
+    s_operation_date OPERATION.OPERATION_DATE % type;
+    cursor c_oper is select * from OPERATION;
+    BEGIN 
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        for l_oper in c_oper
+            loop 
+                s_id_operation := l_oper.ID_OPERATION;
+                s_id_policye := l_oper.ID_POLICYE;
+                s_paid := l_oper.PAID;
+                s_received := l_oper.RECEIVED;
+                s_operation_date := l_oper.OPERATION_DATE;
+                DBMS_OUTPUT.PUT_LINE (s_id_operation ||' | '|| s_id_policye ||' | '|| s_paid ||' | '|| s_received ||' | '|| s_operation_date);
+        END LOOP;
+    END;
+DECLARE
+    name_insurance        VARCHAR2(1000);
+    description_insurance VARCHAR2(1000);
+BEGIN
+    name_insurance := NULL;
+    description_insurance := NULL;
+    insert_insurance(name_insurance => name_insurance, description_insurance => description_insurance);
+--rollback; 
+END;    EXCEPTION
+    when others
+        then
+            DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+DROP PROCEDURE ALL_INSURANCE;
+DROP PROCEDURE ALL_CALCULATIONS;
+DROP PROCEDURE ALL_AGENTE;
+DROP PROCEDURE ALL_CLIENTE;
+DROP PROCEDURE ALL_POLICYE;
+DROP PROCEDURE ALL_OPERATION;
+EXEC ALL_INSURANCE;
+EXEC ALL_CALCULATIONS;
+EXEC ALL_AGENTE;
+EXEC ALL_CLIENTE;
+EXEC ALL_POLICYE;
+EXEC ALL_OPERATION;
+----------------OPERATION
+CREATE OR REPLACE PROCEDURE SEARCH_OPERATION_ID_POLICYE (
+    numm NUMBER) AS
+BEGIN
+    DECLARE 
+    s_id_operation OPERATION.ID_OPERATION % type;
+    s_id_policye OPERATION.ID_POLICYE % type;
+    s_paid OPERATION.PAID % type;
+    s_received OPERATION.RECEIVED % type;
+    s_operation_date OPERATION.OPERATION_DATE % type;
+    cursor c_oper is select * from OPERATION;
+    BEGIN 
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        
+        for l_oper in c_oper
+            loop 
+                if numm = l_oper.ID_POLICYE THEN
+                s_id_operation := l_oper.ID_OPERATION;
+                s_id_policye := l_oper.ID_POLICYE;
+                s_paid := l_oper.PAID;
+                s_received := l_oper.RECEIVED;
+                s_operation_date := l_oper.OPERATION_DATE;
+                SYS.DBMS_OUTPUT.PUT_LINE (s_id_operation ||' | '|| s_id_policye ||' | '|| s_paid ||' | '|| s_received ||' | '|| s_operation_date);
+                END IF;
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+----------------POLICYE
+CREATE OR REPLACE PROCEDURE SEARCH_POLICYE (
+    x pls_integer := 12,
+    numm NUMBER,
+    str CHAR ,
+    num_date DATE
+    ) AS
+BEGIN
+    DECLARE 
+        v_tab POLICYE%ROWTYPE;
+    BEGIN
+        CASE X
+        WHEN 1 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.ID_POLICYE = numm;
+        WHEN 2 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.ID_AGENTE = numm;
+        WHEN 3 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.ID_CLIENTE = numm;
+        WHEN 4 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.ID_INSURED_EVENT = numm;
+        WHEN 5 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.ORGANIZATION_INFO = numm;
+        WHEN 6 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.ID_CALCULATIONS = numm;
+        WHEN 7 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.OBJECT_INSURANCE = str;
+        WHEN 8 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.CONCLUDED = num_date;
+        WHEN 9 THEN SELECT * INTO v_tab FROM POLICYE WHERE POLICYE.VALIDITY = num_date;
+            ELSE NULL;
+    END CASE;
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        SYS.DBMS_OUTPUT.PUT_LINE (v_tab.ID_POLICYE ||' | '|| v_tab.ID_AGENTE ||' | '|| v_tab.ID_CLIENTE ||' | '|| v_tab.ID_INSURED_EVENT ||' | '|| v_tab.ORGANIZATION_INFO ||' | '|| v_tab.ID_CALCULATIONS ||' | '|| v_tab.OBJECT_INSURANCE ||' | '|| v_tab.CONCLUDED ||' | '|| v_tab.VALIDITY);
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE SEARCH_POLICYE_PASSPORT_ID (p_passport_id IN VARCHAR2)
+IS
+BEGIN
+  FOR rec IN (SELECT *
+              FROM policye
+              WHERE id_cliente IN (SELECT id_cliente
+                                   FROM cliente
+                                   WHERE passport_id = p_passport_id))
+  LOOP
+    DBMS_OUTPUT.PUT_LINE('Policy ID: ' || rec.id_policye || ', Agent ID: ' || rec.id_agente || ', Insured Event ID: ' || rec.id_insured_event || ', Insured Event ID: ' || rec.id_insured_event );
+  END LOOP;
+END;
+/
+
+
+----------------CLIENTE
+CREATE OR REPLACE PROCEDURE SEARCH_CLIENTE (
+    x pls_integer := 11,
+    numm NUMBER,
+    str CHAR ,
+    num_date DATE
+    ) AS
+BEGIN
+    DECLARE 
+        v_tab CLIENTE%ROWTYPE;
+    BEGIN
+        CASE X
+        WHEN 1 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.ID_CLIENTE = numm;
+        WHEN 2 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.FIRST_NAME = str;
+        WHEN 3 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.SECOND_NAME = str;
+        WHEN 4 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.MIDDLE_NAME = str;
+        WHEN 5 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.BIRTHDAY = num_date;
+        WHEN 6 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.PASSPORT_NUMBER = str;
+        WHEN 7 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.PASSPORT_ID = numm;
+        WHEN 8 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.UNP = str;
+        WHEN 9 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.PLACEWORK = str;
+        WHEN 10 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.ADDRESS = str;
+        WHEN 11 THEN SELECT * INTO v_tab FROM CLIENTE WHERE CLIENTE.PHONE_NUMBER = numm;
+            ELSE NULL;
+    END CASE;
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        SYS.DBMS_OUTPUT.PUT_LINE (v_tab.ID_CLIENTE ||' | '|| v_tab.FIRST_NAME ||' | '|| v_tab.SECOND_NAME ||' | '|| v_tab.MIDDLE_NAME ||' | '|| v_tab.BIRTHDAY ||' | '|| v_tab.PASSPORT_NUMBER ||' | '|| v_tab.PASSPORT_ID ||' | '|| v_tab.UNP ||' | '|| v_tab.PLACEWORK ||' | '|| v_tab.ADDRESS ||' | '|| v_tab.PHONE_NUMBER);
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE SEARCH_CLIENTE_FSM (
+    first_name CHAR,
+    second_name CHAR,
+    middle_name CHAR) AS
+BEGIN
+    DECLARE 
+    s_id_cliente CLIENTE.ID_CLIENTE % type;
+    s_first_name CLIENTE.FIRST_NAME % type;
+    s_second_name CLIENTE.SECOND_NAME % type;
+    s_middle_name CLIENTE.MIDDLE_NAME % type;
+    s_birthday CLIENTE.BIRTHDAY % type;
+    s_passport_number CLIENTE.PASSPORT_NUMBER % type;
+    s_passport_id CLIENTE.PASSPORT_ID % type;
+    s_unp CLIENTE.UNP % type;
+    s_placework  CLIENTE.PLACEWORK % type;
+    s_address CLIENTE.ADDRESS % type;
+    s_phone_number CLIENTE.PHONE_NUMBER % type;
+    cursor c_clint is select * from CLIENTE;
+    BEGIN 
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        
+        for l_clint in c_clint
+            loop 
+                if first_name = l_clint.FIRST_NAME THEN
+                    if second_name = l_clint.SECOND_NAME THEN
+                        if middle_name = l_clint.MIDDLE_NAME THEN
+                            s_id_cliente := l_clint.ID_CLIENTE;
+                            s_first_name:= l_clint.FIRST_NAME;
+                            s_second_name :=  l_clint.SECOND_NAME;
+                            s_middle_name :=  l_clint.MIDDLE_NAME;
+                            s_birthday :=  l_clint.BIRTHDAY;
+                            s_passport_number :=  l_clint.PASSPORT_NUMBER;
+                            s_passport_id :=  l_clint.PASSPORT_ID;
+                            s_unp :=  l_clint.UNP;
+                            s_placework :=  l_clint.PLACEWORK;
+                            s_address :=  l_clint.ADDRESS;
+                            s_phone_number :=  l_clint.PHONE_NUMBER;
+                SYS.DBMS_OUTPUT.PUT_LINE (s_id_cliente ||' | '|| s_first_name ||' | '|| s_second_name ||' | '|| s_middle_name ||' | '|| s_birthday ||' | '|| s_passport_number ||' | '|| s_passport_id ||' | '|| s_unp ||' | '|| s_placework ||' | '|| s_address ||' | '|| s_phone_number);
+                END IF;
+                END IF;
+                END IF;
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------AGENTE
+CREATE OR REPLACE PROCEDURE SEARCH_AGENTE (
+    x pls_integer := 12,
+    numm NUMBER,
+    str CHAR ,
+    num_date DATE
+    ) AS
+BEGIN
+    DECLARE 
+        v_tab AGENTE%ROWTYPE;
+    BEGIN
+        CASE X
+        WHEN 1 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.ID_AGENTE = numm;
+        WHEN 2 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.FIRST_NAME = str;
+        WHEN 3 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.SECOND_NAME = str;
+        WHEN 4 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.MIDDLE_NAME = str;
+        WHEN 5 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.BIRTHDAY = num_date;
+        WHEN 6 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.PASSPORT_NUMBER = str;
+        WHEN 7 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.PASSPORT_ID = numm;
+        WHEN 8 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.UNP = str;
+        WHEN 9 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.SALARY_IBAN = numm;
+        WHEN 10 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.ADDRESS = str;
+        WHEN 11 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.PHONE_NUMBER = numm;
+        WHEN 12 THEN SELECT * INTO v_tab FROM AGENTE WHERE AGENTE.REGISTRATION = num_date;
+            ELSE NULL;
+    END CASE;
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        SYS.DBMS_OUTPUT.PUT_LINE (v_tab.ID_AGENTE ||' | '|| v_tab.FIRST_NAME ||' | '|| v_tab.SECOND_NAME ||' | '|| v_tab.MIDDLE_NAME ||' | '|| v_tab.BIRTHDAY ||' | '|| v_tab.PASSPORT_NUMBER ||' | '|| v_tab.PASSPORT_ID ||' | '|| v_tab.UNP ||' | '|| v_tab.SALARY_IBAN ||' | '|| v_tab.ADDRESS ||' | '|| v_tab.PHONE_NUMBER ||' | '|| v_tab.REGISTRATION);
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE SEARCH_AGENTE_FSM (
+    first_name CHAR,
+    second_name CHAR,
+    middle_name CHAR) AS
+BEGIN
+    DECLARE 
+    s_id_agente AGENTE.ID_AGENTE % type;
+    s_first_name AGENTE.FIRST_NAME % type;
+    s_second_name AGENTE.SECOND_NAME % type;
+    s_middle_name AGENTE.MIDDLE_NAME % type;
+    s_birthday AGENTE.BIRTHDAY % type;
+    s_passport_number AGENTE.PASSPORT_NUMBER % type;
+    s_passport_id AGENTE.PASSPORT_ID % type;
+    s_unp AGENTE.UNP % type;
+    s_salary_iban AGENTE.SALARY_IBAN % type;
+    s_address AGENTE.ADDRESS % type;
+    s_phone_number AGENTE.PHONE_NUMBER % type;
+    s_registration AGENTE.REGISTRATION % type;
+    cursor c_agent is select * from AGENTE;
+    BEGIN 
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        
+        for l_agent in c_agent
+            loop 
+                if first_name = l_agent.FIRST_NAME THEN
+                    if second_name = l_agent.SECOND_NAME THEN
+                        if middle_name = l_agent.MIDDLE_NAME THEN
+                            s_id_agente := l_agent.ID_AGENTE;
+                            s_first_name:= l_agent.FIRST_NAME;
+                            s_second_name :=  l_agent.SECOND_NAME;
+                            s_middle_name :=  l_agent.MIDDLE_NAME;
+                            s_birthday :=  l_agent.BIRTHDAY;
+                            s_passport_number :=  l_agent.PASSPORT_NUMBER;
+                            s_passport_id :=  l_agent.PASSPORT_ID;
+                            s_unp :=  l_agent.UNP;
+                            s_salary_iban :=  l_agent.SALARY_IBAN;
+                            s_address :=  l_agent.ADDRESS;
+                            s_phone_number :=  l_agent.PHONE_NUMBER;
+                            s_registration :=  l_agent.REGISTRATION;
+                SYS.DBMS_OUTPUT.PUT_LINE (s_id_agente ||' | '|| s_first_name ||' | '|| s_second_name ||' | '|| s_middle_name ||' | '|| s_birthday ||' | '|| s_passport_number ||' | '|| s_passport_id ||' | '|| s_unp ||' | '|| s_salary_iban ||' | '|| s_address ||' | '|| s_phone_number ||' | '|| s_registration);
+                END IF;
+                END IF;
+                END IF;
+        END LOOP;
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+----------------CALCULATIONS
+CREATE OR REPLACE PROCEDURE SEARCH_CALCULATIONS_ID (
+    numm NUMBER) AS
+BEGIN
+    DECLARE
+        v_tab CALCULATIONS%ROWTYPE;
+    BEGIN
+        SELECT * INTO v_tab FROM CALCULATIONS WHERE CALCULATIONS.ID_CALCULATIONS = numm;
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        SYS.DBMS_OUTPUT.PUT_LINE (v_tab.ID_CALCULATIONS ||' | '|| v_tab.ID_INSURED_EVENT ||' | '|| v_tab.ANNUAL_FEE ||' | '|| v_tab.PAYOUT ||' | '|| v_tab.DESCRIPTION_CALCULATIONS);
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+----------------INSURED_EVENT
+CREATE OR REPLACE PROCEDURE SEARCH_INSURED_EVENT_ID (
+    numm NUMBER) AS
+BEGIN
+    DECLARE
+        v_tab INSURED_EVENT%ROWTYPE;
+    BEGIN
+        SELECT * INTO v_tab FROM INSURED_EVENT WHERE INSURED_EVENT.ID_INSURED_EVENT = numm;
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        SYS.DBMS_OUTPUT.PUT_LINE (v_tab.ID_INSURED_EVENT ||' | '|| v_tab.NAME_INSURED_EVENT ||' | '|| v_tab.ID_INSURANCE ||' | '|| v_tab.DESCRIPTION_INSURED_EVENT);
+    END;
+END;
+
+CREATE OR REPLACE PROCEDURE SEARCH_INSURED_EVENT_NAME (
+    str CHAR) AS
+BEGIN
+    DECLARE
+        v_tab INSURED_EVENT%ROWTYPE;
+    BEGIN
+        SELECT * INTO v_tab FROM INSURED_EVENT WHERE INSURED_EVENT.NAME_INSURED_EVENT = str;
+        SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+        SYS.DBMS_OUTPUT.PUT_LINE (v_tab.ID_INSURED_EVENT ||' | '|| v_tab.NAME_INSURED_EVENT ||' | '|| v_tab.ID_INSURANCE ||' | '|| v_tab.DESCRIPTION_INSURED_EVENT);
+    END;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+DROP PROCEDURE SEARCH_POLICYE;
+DROP PROCEDURE SEARCH_CLIENTE;
+DROP PROCEDURE SEARCH_AGENTE;
+DROP PROCEDURE SEARCH_CALCULATIONS_ID;
+DROP PROCEDURE SEARCH_INSURED_EVENT_ID;
+DROP PROCEDURE SEARCH_INSURED_EVENT_NAME;
+DROP PROCEDURE SEARCH_OPERATION_ID_POLICYE;
+DROP PROCEDURE SEARCH_CLIENTE_FSM;
+DROP PROCEDURE SEARCH_AGENTE_FSM;
+
+--('Порядковый номер столбца', 'Числовое поле', 'Текстовое поле', 'Поле даты в формате дд-мм-гггг')
+EXEC SEARCH_POLICYE('1', '1', 'str', '01-01-2000');
+--1.ID(num)    2.ID_AGENTE(num)   3.ID_CLIENTE(num)    4.ID_INSURED_EVENT(num)   5.ORAGNIZATION_INFO(УНП)(num)    6.ID_CALCULATIONS(num)   7.OBJECT_INSURANCE(str)  8.CONCLUDED(date)  9.VALIDITY(date)
+EXEC SEARCH_CLIENTE('1', '1', 'str', '01-01-2000');
+--1.ID(num)    2.FIRST_NAME(str)   3.SECOND_NAME(str)    4.MIDDLE_NAME(str)   5.BIRTHDAY(date)    6.PASSPORT_NUMBER(str)   7.PASSPORT_ID(num)  8.UNP(str)  9.PLACEWORK(str)  10.ADDRESS(str)     11.PHONE_NUMBER(num)
+EXEC SEARCH_AGENTE('1', '1', 'str', '01-01-2000');
+--1.ID(num)    2.FIRST_NAME(str)   3.SECOND_NAME(str)    4.MIDDLE_NAME(str)   5.BIRTHDAY(date)    6.PASSPORT_NUMBER(str)   7.PASSPORT_ID(num)  8.UNP(str)  9.SALARY_IBAN(num)  10.ADDRESS(str)     11.PHONE_NUMBER(num)     12.REGISTRATION(date)
+
+--('ID')
+EXEC SEARCH_CALCULATIONS_ID('1');
+EXEC SEARCH_INSURED_EVENT_ID('1');
+EXEC SEARCH_OPERATION_ID_POLICYE('1');
+
+--('Name')
+EXEC SEARCH_INSURED_EVENT_NAME('name');
+EXEC SEARCH_AGENTE_FSM ('Алексей', 'Дрозд', 'Игоревич');
+EXEC SEARCH_CLIENTE_FSM ('first_name',	'second_name', 'middle_name');
+
+--('Date')
+--EXEC SEARCH_OPERATION_DATE('03-05-2023');
+EXEC SEARCH_POLICYE_PASSPORT_ID ('1111222233334444');
+CREATE OR REPLACE PROCEDURE MY_POLICYE(passport_number IN VARCHAR2) AS
+BEGIN
+SYS.DBMS_OUTPUT.ENABLE (buffer_size => null);
+  FOR p_policye IN (SELECT p.id_policye, ie.name_insured_event, i.name_insurance, c.annual_fee, c.payout, c.description_calculations, 
+                         a.first_name || ' ' || a.second_name || ' ' || a.middle_name AS agent_name,
+                         ie.description_insured_event, o.legal_name AS organization_name,
+                         o.address AS organization_address, o.bik AS organization_bik,
+                         o.date_registration_mns AS organization_registration_date,
+                         p.object_insurance, p.concluded, p.validity
+                  FROM POLICYE p
+                  JOIN CALCULATIONS c ON c.id_calculations = p.id_calculations
+                  JOIN INSURED_EVENT ie ON ie.id_insured_event = p.id_insured_event
+                  JOIN INSURANCE i ON i.id_insurance = ie.id_insurance
+                  JOIN AGENTE a ON a.id_agente = p.id_agente
+                  JOIN CLIENTE cl ON cl.id_cliente = p.id_cliente
+                  JOIN ORGANIZATION_INFO o ON o.unp = p.organization_info
+                  WHERE cl.passport_number = 'MP1234567')
+    LOOP
+    dbms_output.put_line('Policy ID: ' || p_policye.id_policye);
+    dbms_output.put_line('Insured event name: ' || p_policye.name_insured_event);
+    dbms_output.put_line('Insurance name: ' || p_policye.name_insurance);
+    dbms_output.put_line('Annual fee: ' || p_policye.annual_fee);
+    dbms_output.put_line('Payout: ' || p_policye.payout);
+    dbms_output.put_line('Calculations description: ' || p_policye.description_calculations);
+    dbms_output.put_line('Agent name: ' || p_policye.agent_name);
+    dbms_output.put_line('Insured event description: ' || p_policye.description_insured_event);
+    dbms_output.put_line('Organization name: ' || p_policye.organization_name);
+    dbms_output.put_line('Organization address: ' || p_policye.organization_address);
+    dbms_output.put_line('Organization BIK: ' || p_policye.organization_bik);
+    dbms_output.put_line('Organization registration date: ' || p_policye.organization_registration_date);
+    dbms_output.put_line('Object of insurance: ' || p_policye.object_insurance);
+    dbms_output.put_line('Policy concluded: ' || p_policye.concluded);
+    dbms_output.put_line('Policy validity: ' || p_policye.validity);
+    dbms_output.put_line('');
+    END LOOP;
+END;
+
+
+CREATE OR REPLACE PROCEDURE SUM_PAID AS
+BEGIN
+    DECLARE
+    sum_of_values NUMBER;
+    BEGIN
+        sum_of_values := get_sum('PAID', 'OPERATION');
+        DBMS_OUTPUT.PUT_LINE('Total salary: ' || sum_of_values);
+    END;
+END;
+
+CREATE OR REPLACE PROCEDURE SUM_RECEIVED AS
+BEGIN
+    DECLARE
+    sum_of_values NUMBER;
+    BEGIN
+        sum_of_values := get_sum('RECEIVED', 'OPERATION');
+        DBMS_OUTPUT.PUT_LINE('Total salary: ' || sum_of_values);
+    END;
+END;
+BEGIN
+
+DROP PROCEDURE SUM_PAID;
+DROP PROCEDURE SUM_RECEIVED;
+DROP PROCEDURE MY_POLICYE;
+EXEC SUM_PAID; --сумма выплат
+EXEC SUM_RECEIVED; --сумма получений
+EXEC MY_POLICYE('MP1234567');
+CREATE OR REPLACE PROCEDURE DELETE_ORGANIZATION_INFO (
+    d_unp ORGANIZATION_INFO.unp%TYPE) AS
+BEGIN
+    DELETE FROM ORGANIZATION_INFO
+    WHERE ORGANIZATION_INFO.unp = d_unp;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE DELETE_INSURANCE (
+    d_id_insurance INSURANCE.id_insurance%TYPE) AS
+BEGIN
+    DELETE FROM INSURANCE 
+    WHERE INSURANCE.id_insurance = d_id_insurance;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE DELETE_INSURED_EVENT (
+    d_id_insured_event INSURED_EVENT.id_insured_event%TYPE) AS
+BEGIN
+    DELETE FROM INSURED_EVENT 
+    WHERE INSURED_EVENT.id_insured_event = d_id_insured_event;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE DELETE_CALCULATIONS (
+    d_id_calculations CALCULATIONS.id_calculations%TYPE) AS
+BEGIN
+    DELETE FROM CALCULATIONS 
+    WHERE CALCULATIONS.id_calculations = d_id_calculations;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE DELETE_AGENTE (
+    d_id_agente AGENTE.id_agente%TYPE) AS
+BEGIN
+    DELETE FROM AGENTE 
+    WHERE AGENTE.id_agente = d_id_agente;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE DELETE_CLIENTE (
+    d_id_cliente CLIENTE.id_cliente%TYPE) AS
+BEGIN
+    DELETE FROM CLIENTE 
+    WHERE CLIENTE.id_cliente = d_id_cliente;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE DELETE_POLICYE (
+    d_id_policye POLICYE.id_policye%TYPE) AS
+BEGIN
+    DELETE FROM POLICYE 
+    WHERE POLICYE.id_policye = d_id_policye;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+    
+CREATE OR REPLACE PROCEDURE DELETE_OPERATION (
+    d_id_operation OPERATION.id_operation%TYPE) AS
+BEGIN
+    DELETE FROM OPERATION 
+    WHERE OPERATION.id_operation = d_id_operation;
+    EXCEPTION
+    when others
+        then
+            SYS.DBMS_OUTPUT.PUT_LINE('code error: ' || sqlcode || ' msg oracle: ' || sqlerrm);
+END;
+/
+
+
+DROP PROCEDURE DELETE_ORGANIZATION_INFO;
+DROP PROCEDURE DELETE_INSURANCE;
+DROP PROCEDURE DELETE_INSURED_EVENT;
+DROP PROCEDURE DELETE_CALCULATIONS;
+DROP PROCEDURE DELETE_AGENTE;
+DROP PROCEDURE DELETE_CLIENTE;
+DROP PROCEDURE DELETE_POLICYE;
+DROP PROCEDURE DELETE_OPERATION;
+
+--
+EXEC DELETE_ORGANIZATION_INFO('123456789')
+SELECT * FROM ORGANIZATION_INFO;
+--
+--
+EXEC DELETE_INSURANCE('1')
+SELECT * FROM INSURANCE;
+--
+--
+EXEC DELETE_INSURED_EVENT('1')
+SELECT * FROM INSURED_EVENT;
+--
+--
+EXEC DELETE_CALCULATIONS('1')
+SELECT * FROM CALCULATIONS;
+--
+--
+EXEC DELETE_AGENTE('1')
+SELECT * FROM AGENTE;
+--
+--
+EXEC DELETE_CLIENTE('1')
+SELECT * FROM CLIENTE;
+--
+--
+EXEC DELETE_POLICYE('1')
+SELECT * FROM POLICYE;
+--
+--
+EXEC DELETE_OPERATION('1')
+SELECT * FROM OPERATION;
+--
+CREATE OR REPLACE FUNCTION GET_SUM(column_name IN VARCHAR2, table_name IN VARCHAR2)
+RETURN NUMBER
+IS
+  total_sum NUMBER := 0;
+BEGIN
+  EXECUTE IMMEDIATE 'SELECT SUM(' || column_name || ') FROM ' || table_name INTO total_sum;
+  RETURN total_sum;
+END;
+
+DROP FUNCTION GET_SUM;
+CREATE OR REPLACE TRIGGER PREVENT_TABLE_DELETION
+BEFORE DROP ON DATABASE
+DECLARE
+   table_name VARCHAR2(30);
+BEGIN
+   SELECT object_name INTO table_name
+   FROM user_objects
+   WHERE object_type = 'TABLE' AND object_name = UPPER(TRIM(SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')));
+   
+   IF table_name IS NOT NULL THEN
+      RAISE_APPLICATION_ERROR(-20001, 'Deleting tables is not allowed!');
+   END IF;
+END;
+
+CREATE OR REPLACE TRIGGER ORG_INFO_INSERT_TRIGGER
+BEFORE INSERT ON ORGANIZATION_INFO
+BEGIN
+RAISE_APPLICATION_ERROR(-20001, 'Добавление данных в таблицу ORGANIZATION_INFO запрещено.');
+END;
+
+DROP TRIGGER ORG_INFO_INSERT_TRIGGER;
+DROP TRIGGER PREVENT_TABLE_DELETION;
+
+ALTER TRIGGER PREVENT_TABLE_DELETION DISABLE;
+ALTER TRIGGER PREVENT_TABLE_DELETION ENABLE;
+
+ALTER TRIGGER ORG_INFO_INSERT_TRIGGER DISABLE;
+ALTER TRIGGER ORG_INFO_INSERT_TRIGGER ENABLE;
+
+CREATE DIRECTORY MYDIR as 'C:\app\orcl_wald/XML/';
+GRANT EXECUTE, READ ,WRITE ON DIRECTORY MYDIR TO PUBLIC;
+
+
+CREATE TABLE TEST_AGENTE
+(
+	id_agente NUMBER(12) NOT NULL,
+	first_name VARCHAR2(1000) NOT NULL,
+	second_name VARCHAR2(1000) NOT NULL,
+	middle_name VARCHAR2(1000),
+    birthday DATE,
+    passport_number VARCHAR2(9) NOT NULL,
+	passport_id VARCHAR2(16) NOT NULL,
+    unp VARCHAR2(9), --УНП
+    salary_iban NUMBER(16), --зарплатный счет
+	address VARCHAR2(1000) NOT NULL,
+	phone_number NUMBER(9),
+    registration DATE NOT NULL, --дата приемв на работу
+    CONSTRAINT PK_TEST_AGENTE PRIMARY KEY(ID_AGENTE) USING INDEX  ENABLE
+);
+
+CREATE OR REPLACE PROCEDURE XMLUNLOAD
+AUTHID CURRENT_USER -- options are "CURRENT_USER" or "DEFINER"; DEFINER is the default
+IS
+    l_file          SYS.UTL_FILE.file_type;
+    xml_data        VARCHAR2(5000);
+    w_repertoire varchar2(64);
+BEGIN
+    SELECT dbms_xmlgen.getxml('SELECT * FROM AGENTE') xml INTO xml_data FROM dual;
+    w_repertoire := 'MYDIR';
+    l_file := SYS.UTL_FILE.fopen(w_repertoire, 'TEST_AGENTE.xml', 'w');
+
+    SYS.UTL_FILE.putf(l_file, xml_data);
+    SYS.UTL_FILE.fclose(l_file);
+END;
+
+CREATE OR REPLACE PROCEDURE XMLLOAD
+IS
+    l_xml           XMLTYPE;
+BEGIN
+    l_xml := XMLTYPE(bfilename('MYDIR', 'TEST_AGENTE.xml'), nls_charset_id('AL32UTF8'));
+
+    INSERT INTO TEST_AGENTE (
+        id_agente,
+        first_name,
+        second_name,
+        middle_name,
+        birthday,
+        passport_number,
+        passport_id,
+        unp,
+        salary_iban,
+        address,
+        phone_number,
+        registration
+    )
+    SELECT
+        t.column_value.extract('/ROW/ID_AGENTE/text()').getNumberVal(),
+        t.column_value.extract('/ROW/FIRST_NAME/text()').getStringVal(),
+        t.column_value.extract('/ROW/SECOND_NAME/text()').getStringVal(),
+        t.column_value.extract('/ROW/MIDDLE_NAME/text()').getStringVal(),
+        to_date(t.column_value.extract('/ROW/BIRTHDAY/text()').getStringVal(), 'dd.mm.yy'),
+        t.column_value.extract('/ROW/PASSPORT_NUMBER/text()').getStringVal(),
+        t.column_value.extract('/ROW/PASSPORT_ID/text()').getStringVal(),
+        t.column_value.extract('/ROW/UNP/text()').getStringVal(),
+        t.column_value.extract('/ROW/SALARY_IBAN/text()').getNumberVal(),
+        t.column_value.extract('/ROW/ADDRESS/text()').getStringVal(),
+        t.column_value.extract('/ROW/PHONE_NUMBER/text()').getNumberVal(),
+        to_date(t.column_value.extract('/ROW/REGISTRATION/text()').getStringVal(), 'dd.mm.yy')
+    FROM TABLE(XMLSEQUENCE(l_xml.extract('/ROWSET/ROW'))) t;
+END;
+
+
+EXEC XMLUNLOAD;
+EXEC XMLLOAD;
+
+SELECT * FROM TEST_AGENTE;
+
+DROP TABLE TEST_AGENTE;
+DROP DIRECTORY MYDIR;
+DROP PROCEDURE XMLUNLOAD;
+DROP PROCEDURE XMLLOAD;
+CREATE SYNONYM cr FOR all_objects;
+
+DROP PUBLIC SYNONYM cr;
+
+CREATE PUBLIC SYNONYM cr_org_info FOR course_admin.ORGANIZATION_INFO;
+CREATE PUBLIC SYNONYM cr_insurance FOR course_admin.INSURANCE;
+CREATE PUBLIC SYNONYM cr_insured_event FOR course_admin.INSURED_EVENT;
+CREATE PUBLIC SYNONYM cr_calculations FOR course_admin.CALCULATIONS;
+CREATE PUBLIC SYNONYM cr_agente FOR course_admin.AGENTE;
+CREATE PUBLIC SYNONYM cr_client FOR course_admin.CLIENTE;
+CREATE PUBLIC SYNONYM cr_policy FOR course_admin.POLICYE;
+CREATE PUBLIC SYNONYM cr_operation FOR course_admin.OPERATION;
+
+CREATE PUBLIC SYNONYM cr_active_policy FOR course_admin.ACTIVE_POLICY;
+CREATE PUBLIC SYNONYM cr_inactive_policy FOR course_admin.INACTIVE_POLICY;
+CREATE PUBLIC SYNONYM cr_last_30day_policy FOR course_admin.LAST_30DAY_POLICY;
+CREATE PUBLIC SYNONYM cr_last_30day_operations FOR course_admin.LAST_30DAY_OPERATIONS;
+CREATE PUBLIC SYNONYM cr_last_30day_paid FOR course_admin.LAST_30DAY_PAID;
+CREATE PUBLIC SYNONYM cr_last_30day_received FOR course_admin.LAST_30DAY_RECEIVED;
+CREATE PUBLIC SYNONYM cr_all_ye_agente FOR course_admin.ALL_YE_AGENTE;
+
+CREATE PUBLIC SYNONYM cr_all_insured_event FOR course_admin.ALL_INSURED_EVENT;
+
+CREATE PUBLIC SYNONYM cr_insert_org_info FOR course_admin.INSERT_ORGANIZATION_INFO;
+CREATE PUBLIC SYNONYM cr_insert_insurance FOR course_admin.INSERT_INSURANCE;
+CREATE PUBLIC SYNONYM cr_insert_insured_event FOR course_admin.INSERT_INSURED_EVENT;
+CREATE PUBLIC SYNONYM cr_insert_agente FOR course_admin.INSERT_AGENTE;
+CREATE PUBLIC SYNONYM cr_insert_calculations FOR course_admin.INSERT_CALCULATIONS;
+CREATE PUBLIC SYNONYM cr_insert_client FOR course_admin.INSERT_CLIENTE;
+CREATE PUBLIC SYNONYM cr_insert_policy FOR course_admin.INSERT_POLICYE;
+CREATE PUBLIC SYNONYM cr_insert_operation FOR course_admin.INSERT_OPERATION;
+
+CREATE PUBLIC SYNONYM cr_update_org_info FOR course_admin.UPDATE_ORGANIZATION_INFO;
+CREATE PUBLIC SYNONYM cr_update_insurance FOR course_admin.UPDATE_INSURANCE;
+CREATE PUBLIC SYNONYM cr_update_insured_event FOR course_admin.UPDATE_INSURED_EVENT;
+CREATE PUBLIC SYNONYM cr_update_calculations FOR course_admin.UPDATE_CALCULATIONS;
+CREATE PUBLIC SYNONYM cr_update_agente FOR course_admin.UPDATE_AGENTE;
+CREATE PUBLIC SYNONYM cr_update_client FOR course_admin.UPDATE_CLIENTE;
+CREATE PUBLIC SYNONYM cr_update_policy FOR course_admin.UPDATE_POLICYE;
+CREATE PUBLIC SYNONYM cr_update_operation FOR course_admin.UPDATE_OPERATION;
+
+CREATE PUBLIC SYNONYM cr_all_insurance FOR course_admin.ALL_INSURANCE;
+CREATE PUBLIC SYNONYM cr_all_calculations FOR course_admin.ALL_CALCULATIONS;
+CREATE PUBLIC SYNONYM cr_all_agente FOR course_admin.ALL_AGENTE;
+CREATE PUBLIC SYNONYM cr_all_client FOR course_admin.ALL_CLIENTE;
+CREATE PUBLIC SYNONYM cr_all_policy FOR course_admin.ALL_POLICYE;
+CREATE PUBLIC SYNONYM cr_all_operation FOR course_admin.ALL_OPERATION;
+
+CREATE PUBLIC SYNONYM cr_search_policy FOR course_admin.SEARCH_POLICYE;
+CREATE PUBLIC SYNONYM cr_search_client FOR course_admin.SEARCH_CLIENTE;
+CREATE PUBLIC SYNONYM cr_search_agente FOR course_admin.SEARCH_AGENTE;
+CREATE PUBLIC SYNONYM cr_search_calculations_id FOR course_admin.SEARCH_CALCULATIONS_ID;
+CREATE PUBLIC SYNONYM cr_search_insured_event_id FOR course_admin.SEARCH_INSURED_EVENT_ID;
+CREATE PUBLIC SYNONYM cr_search_operation_id_policye FOR course_admin.SEARCH_OPERATION_ID_POLICYE;
+CREATE PUBLIC SYNONYM cr_search_insured_event_name FOR course_admin.SEARCH_INSURED_EVENT_NAME;
+CREATE PUBLIC SYNONYM cr_search_agente_fsm FOR course_admin.SEARCH_AGENTE_FSM;
+CREATE PUBLIC SYNONYM cr_search_cliente_fsm FOR course_admin.SEARCH_CLIENTE_FSM;
+CREATE PUBLIC SYNONYM cr_search_policye_passport_id FOR course_admin.SEARCH_POLICYE_PASSPORT_ID;
+
+CREATE PUBLIC SYNONYM cr_delete_organization_info FOR course_admin.DELETE_ORGANIZATION_INFO;
+CREATE PUBLIC SYNONYM cr_delete_insurance FOR course_admin.DELETE_INSURANCE;
+CREATE PUBLIC SYNONYM cr_delete_insured_event FOR course_admin.DELETE_INSURED_EVENT;
+CREATE PUBLIC SYNONYM cr_delete_calculations FOR course_admin.DELETE_CALCULATIONS;
+CREATE PUBLIC SYNONYM cr_delete_agente FOR course_admin.DELETE_AGENTE;
+CREATE PUBLIC SYNONYM cr_delete_cliente FOR course_admin.DELETE_CLIENTE;
+CREATE PUBLIC SYNONYM cr_delete_policye FOR course_admin.DELETE_POLICYE;
+CREATE PUBLIC SYNONYM cr_delete_operation FOR course_admin.DELETE_OPERATION;
+
+CREATE PUBLIC SYNONYM cr_sum_paid FOR course_admin.SUM_PAID;
+CREATE PUBLIC SYNONYM cr_sum_received FOR course_admin.SUM_RECEIVED;
+CREATE PUBLIC SYNONYM cr_my_policye FOR course_admin.MY_POLICYE;
+
+
+DROP PUBLIC SYNONYM cr_org_info;
+DROP PUBLIC SYNONYM cr_insurance;
+DROP PUBLIC SYNONYM cr_insured_event;
+DROP PUBLIC SYNONYM cr_calculations;
+DROP PUBLIC SYNONYM cr_agente;
+DROP PUBLIC SYNONYM cr_client;
+DROP PUBLIC SYNONYM cr_policy;
+DROP PUBLIC SYNONYM cr_operation;
+DROP PUBLIC SYNONYM cr_active_policy;
+DROP PUBLIC SYNONYM cr_inactive_policy;
+DROP PUBLIC SYNONYM cr_last_30day_policy;
+DROP PUBLIC SYNONYM cr_last_30day_operations;
+DROP PUBLIC SYNONYM cr_last_30day_paid;
+DROP PUBLIC SYNONYM cr_last_30day_received;
+DROP PUBLIC SYNONYM cr_all_ye_agente;
+DROP PUBLIC SYNONYM cr_all_insured_event;
+DROP PUBLIC SYNONYM cr_insert_org_info;
+DROP PUBLIC SYNONYM cr_insert_insurance;
+DROP PUBLIC SYNONYM cr_insert_insured_event;
+DROP PUBLIC SYNONYM cr_insert_agente;
+DROP PUBLIC SYNONYM cr_insert_calculations;
+DROP PUBLIC SYNONYM cr_insert_client;
+DROP PUBLIC SYNONYM cr_insert_policy;
+DROP PUBLIC SYNONYM cr_insert_operation;
+DROP PUBLIC SYNONYM cr_update_org_info;
+DROP PUBLIC SYNONYM cr_update_insurance;
+DROP PUBLIC SYNONYM cr_update_insured_event;
+DROP PUBLIC SYNONYM cr_update_calculations;
+DROP PUBLIC SYNONYM cr_update_agente;
+DROP PUBLIC SYNONYM cr_update_client;
+DROP PUBLIC SYNONYM cr_update_policy;
+DROP PUBLIC SYNONYM cr_update_operation;
+DROP PUBLIC SYNONYM cr_all_insurance;
+DROP PUBLIC SYNONYM cr_all_calculations;
+DROP PUBLIC SYNONYM cr_all_agente;
+DROP PUBLIC SYNONYM cr_all_client;
+DROP PUBLIC SYNONYM cr_all_policy;
+DROP PUBLIC SYNONYM cr_all_operation;
+DROP PUBLIC SYNONYM cr_search_policy;
+DROP PUBLIC SYNONYM cr_search_client;
+DROP PUBLIC SYNONYM cr_search_agente;
+DROP PUBLIC SYNONYM cr_search_calculations_id;
+DROP PUBLIC SYNONYM cr_search_insured_event_id;
+DROP PUBLIC SYNONYM cr_search_operation_id_policye;
+DROP PUBLIC SYNONYM cr_search_insured_event_name;
+DROP PUBLIC SYNONYM cr_search_agente_fsm;
+DROP PUBLIC SYNONYM cr_search_cliente_fsm;
+DROP PUBLIC SYNONYM cr_search_policye_passport_id;
+DROP PUBLIC SYNONYM cr_delete_organization_info;
+DROP PUBLIC SYNONYM cr_delete_insurance;
+DROP PUBLIC SYNONYM cr_delete_insured_event;
+DROP PUBLIC SYNONYM cr_delete_calculations;
+DROP PUBLIC SYNONYM cr_delete_agente;
+DROP PUBLIC SYNONYM cr_delete_cliente;
+DROP PUBLIC SYNONYM cr_delete_policye;
+DROP PUBLIC SYNONYM cr_delete_operation;
+DROP PUBLIC SYNONYM cr_sum_paid;
+DROP PUBLIC SYNONYM cr_sum_received;
+DROP PUBLIC SYNONYM cr_my_policye;
+--
+EXEC INSERT_CALCULATIONS( '1', '4000', '25000', 'описание');
+--
+--
+EXEC INSERT_CLIENTE( 'Алексей', 'Дрозд', 'Игоревич', '13-03-2004', 'MP1234567', '1111222233334444', 'AB1234567', 'ОАО "Белгазпромбанк", Экономист', 'Рокосовского 1', '291112233');
+--
+--
+EXEC INSERT_POLICYE( '1', '1', '1', '123456789', '1', 'Мужчина, 20лет, рост 180, вес 70', CURRENT_DATE, '02-05-2033');
+--
+--
+EXEC INSERT_OPERATION('1', '0', '333',  CURRENT_TIMESTAMP);
+--
+
+
+--------------------CLIENTE
+DECLARE 
+    n NUMBER := 1;
+BEGIN
+   WHILE (n < 1000)
+   loop
+        INSERT INTO CLIENTE VALUES(ID_CLIENTE_SEQ.NEXTVAL , 'Client', 'Second_name', 'middle_name', '10-10-2010', 'MP1234567', '1111222233334444', 'AB1234567', 'ОАО "Белгазпромбанк", Экономист', 'Победителей 1', '291112233');
+        n := n+1;
+    END loop;
+END;
+
+DELETE FROM CLIENTE 
+WHERE CLIENTE.first_name = 'Client';
+
+SELECT * FROM CLIENTE;
+
+
+--------------------OPERATION
+DECLARE 
+    ran NUMBER;
+    ran1 NUMBER;
+    ran2 NUMBER;
+    n NUMBER := 1;
+BEGIN
+   WHILE (n < 1000)
+   loop
+        ran := dbms_random.value(1, 1000);
+        ran1 := dbms_random.value(1000, 10000);
+        ran2 := dbms_random.value(0, 100000);
+        INSERT INTO OPERATION VALUES(ID_OPERATION_SEQ.NEXTVAL ,ran, ran1, ran2,  '03-05-23 04:00:26,027000');
+        n := n+1;
+    END loop;
+END;
+
+DELETE FROM OPERATION 
+WHERE OPERATION.OPERATION_DATE = '03-05-23 04:00:26,027000';
+
+SELECT * FROM OPERATION;
+
+--------------------POLICYE
+DECLARE 
+    ran NUMBER;
+    ran1 NUMBER;
+    ran2 NUMBER;
+    ran3 NUMBER;
+    n NUMBER := 1;
+BEGIN
+   WHILE (n < 1000)
+   loop
+        ran := dbms_random.value(1, 8);
+        ran1 := dbms_random.value(1, 1000);
+        ran2 := dbms_random.value(1, 15);
+        ran3 := dbms_random.value(1, 1000);
+        INSERT INTO POLICYE VALUES (ID_POLICYE_SEQ.NEXTVAL, ran, ran1, ran2, '123456789', '1', 'описание1', CURRENT_DATE, '02-05-2033');
+        n := n+1;
+    END loop;
+END;
+
+DELETE FROM POLICYE 
+WHERE POLICYE.OBJECT_INSURANCE = 'описание1';
+
+SELECT * FROM POLICYE;
+
+--------------------CALCULATIONS
+DECLARE 
+    ran NUMBER;
+    ran1 NUMBER;
+    ran2 NUMBER;
+    ran3 NUMBER;
+    n NUMBER := 1;
+BEGIN
+   WHILE (n < 1000)
+   loop
+        ran := round(dbms_random.value(1, 8));
+        ran1 := round(dbms_random.value(1000, 100000));
+        ran2 := round(dbms_random.value(1, 15));
+        ran3 := round(dbms_random.value(100, 100000));
+        INSERT INTO CALCULATIONS VALUES (ID_CALCULATIONS_SEQ.NEXTVAL, ran2, ran3, ran1, 'описание1');
+        n := n+1;
+    END loop;
+END;
+
+DELETE FROM CALCULATIONS 
+WHERE CALCULATIONS.DESCRIPTION_CALCULATIONS = 'описание1';
+
+SELECT * FROM CALCULATIONS;
+
+SELECT * FROM INSURED_EVENT;

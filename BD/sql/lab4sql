@@ -1,0 +1,42 @@
+select tablespace_name, contents from dba_tablespaces;
+
+select tablespace_name, file_name from dba_data_files;
+select tablespace_name, file_name from dba_temp_files;
+select tablespace_name, file_name from dba_undo_extents;    
+
+select * from v$log;
+select member from v$logfile;
+
+alter system SWITCH LOGFILE;
+select group#, thread#, sequence#, first_change#, next_change# from v$log; 
+
+alter database add logfile group 4 'REDO04.log' size 50 m blocksize 512;
+alter database add logfile member 'REDO041.log' reuse to group 4;
+alter database add logfile member 'REDO042.log' reuse to group 4;
+
+alter system SWITCH LOGFILE;
+select group#, thread#, sequence#, first_change#, next_change# from v$log;
+
+alter database drop logfile member 'REDO04.log';
+alter database drop logfile member 'REDO041.log';
+alter database drop logfile member 'REDO042.log';
+alter database drop logfile group 4;
+
+select log_mode from v$database;
+
+select * from v$archived_log;
+
+alter SYSTEM ARCHIVE LOG start;
+
+alter system set LOG_ARCHIVE_DEST_1='LOCATION=/archive'
+
+shutdown immediate;
+startup mount;
+alter database noarchivelog;
+select name, log_mode from v$database;
+alter database open;
+
+select * from v$controlfiles;
+
+show parameter control;
+

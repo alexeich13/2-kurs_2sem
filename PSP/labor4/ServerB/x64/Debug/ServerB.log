@@ -1,0 +1,12 @@
+﻿  ErrorHandling.cpp
+  ServerB.cpp
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\ServerB.cpp(42,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\ServerB.cpp(86,42): warning C4244: аргумент: преобразование "SOCKET" в "short", возможна потеря данных
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\ServerB.cpp(91,50): warning C4244: аргумент: преобразование "SOCKET" в "short", возможна потеря данных
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\ServerB.cpp(81,8): warning C4101: buffer: неиспользованная локальная переменная
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\ServerB.cpp(140): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\ServerB.cpp(199,29): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Создание кода...
+ServerB.obj : error LNK2005: "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __cdecl GetErrorMsgText(int)" (?GetErrorMsgText@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@H@Z) уже определен в ErrorHandling.obj
+ServerB.obj : error LNK2005: "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __cdecl SetErrorMsgText(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,int)" (?SetErrorMsgText@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V12@H@Z) уже определен в ErrorHandling.obj
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\labor4\ServerB\x64\Debug\ServerB.exe : fatal error LNK1169: обнаружен многократно определенный символ - один или более

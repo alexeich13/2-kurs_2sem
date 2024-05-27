@@ -1,0 +1,5 @@
+﻿  ServerB.cpp
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\Laba 5\ServerB\ServerB.cpp(19,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\Laba 5\ServerB\ServerB.cpp(29,7): warning C4101: ibuf: неиспользованная локальная переменная
+C:\BSTU\2 kurs\2 kurs 2 sem\PSP\Laba 5\ServerB\ServerB.cpp(27,6): warning C4101: lobuf: неиспользованная локальная переменная
+  ServerB.vcxproj -> C:\BSTU\2 kurs\2 kurs 2 sem\PSP\Laba 5\ServerB\Debug\ServerB.exe
