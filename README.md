@@ -1,1 +1,1 @@
-# 2-kurs_2sem
+# 2_kurs_2sem
